@@ -20,20 +20,20 @@
     </el-row>
     <el-table style="width: 100%" :data="pageTableData" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>                   
-      <el-table-column label="机构名称" prop="name"></el-table-column>
-      <el-table-column label="机构类型" prop="code"></el-table-column>
-      <el-table-column label="负责人" prop="statutory"></el-table-column>
-      <el-table-column label="性别" prop="phone"></el-table-column>
-      <el-table-column label="联系电话" prop="open"></el-table-column>
-      <el-table-column label="单位地址" prop="account"></el-table-column>
-      <el-table-column label="单位人数" prop="number"></el-table-column>
+      <el-table-column label="机构名称" prop="Name"></el-table-column>
+      <el-table-column label="机构类型" prop="Type"></el-table-column>
+      <el-table-column label="负责人" prop="ResponsiblePersonName"></el-table-column>
+      <el-table-column label="性别" prop="ResponsiblePersonSex"></el-table-column>
+      <el-table-column label="联系电话" prop="ResponsiblePersonPhone"></el-table-column>
+      <el-table-column label="单位地址" prop="ResponsiblePersonPhone"></el-table-column>
+      <el-table-column label="单位人数" prop="StaffCnt"></el-table-column>
       <el-table-column label="营业执照">
         <template slot-scope="scope">
           <img :src="scope.row.img" style="width:50px;height:50px" @click="imgBtn(scope.$index)"/>
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="state"></el-table-column>
-      <el-table-column label="创建时间" prop="date"></el-table-column>
+      <el-table-column label="状态" prop="State"></el-table-column>
+      <el-table-column label="创建时间" prop="CreateTime"></el-table-column>
       <el-table-column fixed="right" label="操作" width="140">
         <template slot-scope="scope">
           <el-button size="small" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)"></el-button>
@@ -99,7 +99,7 @@
               >
               <el-select v-model="addForm.Type" placeholder="请选择">
                   <el-option
-                    v-for="item in options1"
+                    v-for="item in typeOpption"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -116,7 +116,7 @@
               >
                 <el-input v-model="addForm.ResponsiblePersonName" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="性别" prop="phone">
+              <el-form-item label="性别" prop="ResponsiblePersonSex">
                 <el-radio v-model="addForm.ResponsiblePersonSex" label="0">男</el-radio>
                 <el-radio v-model="addForm.ResponsiblePersonSex" label="1">女</el-radio>
               </el-form-item>
@@ -146,11 +146,6 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-                <!-- <el-cascader
-                  :options="options1"
-                  v-model="addForm.State"
-                  @change="handleChange1">
-                </el-cascader> -->
               </el-form-item>
               <el-form-item label="到期时间"
               :rules="[{ required: true, message: '请选择到期时间'}]"
@@ -184,6 +179,15 @@
                     </li>
                   </ul>
                 </div> -->
+                <el-upload
+                  class="avatar-uploader"
+                  action="http://210.76.124.110:86/api/v1/file/push"
+                  :http-request="uploadFile"  
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess">
+                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
               </el-form-item>
             </el-form>
             <div class="_organization_from_right">
@@ -258,22 +262,22 @@
         addFormVisible: false,//新增界面是否显示
         addLoading: false,
         addForm: {
-              "ParentId": 5, //(integer, optional): 父节点
-              "Type": 1,  //(integer, optional): 机构类型，从字典接口获取
-              "StaffCnt": 233,	//(integer, optional): 职工人数
+              "ParentId": "", //(integer, optional): 父节点
+              "Type": "",  //(integer, optional): 机构类型，从字典接口获取
+              "StaffCnt": "",	//(integer, optional): 职工人数
               "BusinessLicenseImg": "",  //(string, optional): 营业执照
               "CreateAccountId": 35, //(integer, optional): 创建者账号id
-              "Name": "string", //(string, optional): 名称
-              "DescDetail": "string",	//(string, optional): 机构详情
-              "Address": "string",  //(string, optional): 地址
-              "State": 0, //(integer, optional): 状态，字典获取
-              "Expired": "2019-02-27T01:31:19.444Z",  //(string, optional): 到期时间
-              "ResponsiblePersonName": "string",  //(string, optional): 负责人姓名
-              "ResponsiblePersonSex": "0",  //(integer, optional): 负责人性别，字典接口获取
-              "ResponsiblePersonPhone": "string",  //(string, optional): 负责人联系电话
-              "Id": 7, //(integer, optional),
-              "CreateTime": "2019-02-27T01:31:19.444Z", //(integer, optional),
-              "UpdateTime": "2019-02-27T01:31:19.444Z" //(integer, optional),
+              "Name": "", //(string, optional): 名称
+              "DescDetail": "",	//(string, optional): 机构详情
+              "Address": "",  //(string, optional): 地址
+              "State": "", //(integer, optional): 状态，字典获取
+              "Expired": "",  //(string, optional): 到期时间
+              "ResponsiblePersonName": "",  //(string, optional): 负责人姓名
+              "ResponsiblePersonSex": "",  //(integer, optional): 负责人性别，字典接口获取
+              "ResponsiblePersonPhone": "",  //(string, optional): 负责人联系电话
+              "Id": "", //(integer, optional),
+              "CreateTime": "", //(integer, optional),
+              "UpdateTime": "" //(integer, optional),
             },
         tableEnd:[],
         options:[{
@@ -308,7 +312,36 @@
         value1 : '',
 
         //用户id
-        accountId : ""
+        accountId : "",
+        //机构列表数据
+        pageTableData : [],
+        //
+        typeOpption :[
+          {
+          value : '全部状态',
+          label : '全部状态'
+        },{
+          value : '私企',
+          label : '私企'
+        },{
+          value : '国企',
+          label : '国企'
+        },
+        {
+          value : '外企',
+          label : '外企'
+        },
+        {
+          value : '社区',
+          label : '社区'
+        },
+        {
+          value : '其他',
+          label : '其他'
+        }
+        ],
+        //营业执照
+        imageUrl : ''
       }
     },
     created(){
@@ -332,13 +365,11 @@
       //   this.tableEnd = this.list
       // }
       const role = sessionStorage.getItem("role");
-      console.log(role);
       if(role){
         const accountId = JSON.parse(role).AccountId;
-        console.log(accountId);
         this.accountId = accountId;
         this.$http.get(`/api/v1/user/${this.accountId}/company `).then(res=>{
-        console.log(res)
+        this.pageTableData = res.data.Obj;
       })
       }
        
@@ -347,6 +378,20 @@
       getCouponSelected(){
 　　　  console.log(this.couponSelected)
 　　　},
+    //图片上传成功回调
+    handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    uploadFile (params){
+      console.log("uploadFile", params);
+      const _file = params.file;
+      var formData = new FormData();
+      formData.append("file", _file);
+      this.$http.post(`/api/v1/file/push`,formData)
+      .then(res=>{
+        console.log(res)
+      })
+    },
       //图片点击关闭
       pCilck(){
         // this.flagFalse =  !this.flagFalse;
@@ -570,33 +615,64 @@
       },
     },
     computed:{
-      pageTableData(){
-        let newList=[];
-        let sonList=[];
-        var _this = this;
-        var NewItems = [];
-        let pages=Math.ceil(_this.list.length/_this.pageSize);//8为每页设置数量
-        for(let i=0;i<pages;i++){
-        sonList=_this.list.slice(i*_this.pageSize,i*_this.pageSize+_this.pageSize);//8为每页设置数量
-          newList.push(sonList)
-        }
-        if(_this.organ !== ''){
-        _this.list.map(item=>{
-            if (item.name.indexOf(_this.organ) != -1) {
-              NewItems.push(item);
-            }
-          })
-          _this.totalItems=NewItems.length
-          return NewItems;
-        }
-        _this.totalItems=_this.list.length
-        return newList[_this.currentPage-1];
-      },
+      // pageTableData(){
+      //   let newList=[];
+      //   let sonList=[];
+      //   var _this = this;
+      //   var NewItems = [];
+      //   let pages=Math.ceil(_this.list.length/_this.pageSize);//8为每页设置数量
+      //   for(let i=0;i<pages;i++){
+      //   sonList=_this.list.slice(i*_this.pageSize,i*_this.pageSize+_this.pageSize);//8为每页设置数量
+      //     newList.push(sonList)
+      //   }
+      //   if(_this.organ !== ''){
+      //   _this.list.map(item=>{
+      //       if (item.name.indexOf(_this.organ) != -1) {
+      //         NewItems.push(item);
+      //       }
+      //     })
+      //     _this.totalItems=NewItems.length
+      //     return NewItems;
+      //   }
+      //   _this.totalItems=_this.list.length
+      //   return newList[_this.currentPage-1];
+      // },
     },
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+.content-container{
+/*上传组件样式*/
+.avatar-uploader {
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+}
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+
+}
+
 .demo-table-expand {
   font-size: 0;
 }
@@ -810,4 +886,5 @@
 ._organization_from form .el-cascader{
   width: 100%;
 }
+
 </style>
