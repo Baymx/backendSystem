@@ -6,7 +6,7 @@
           <el-form-item>
             <el-input v-model="tion" placeholder="请输入名称/手机查询关键字" style="width:220px;font-size:12px;"></el-input>
           <el-select v-model="department" placeholder="全部状态" style="width:130px;">
-			      <el-option style="height:45px;" v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+			      <el-option style="height:45px;" v-for="item in stateOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
 			    </el-select>
           </el-form-item>
           <el-form-item>
@@ -18,7 +18,8 @@
         </el-form>
       </el-col>
     </el-row>
-    <el-table style="width: 100%" :data="pageTableData" @selection-change="handleSelectionChange">
+    <el-table style="width: 100%" :data="tableList" 
+    @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>                   
       <el-table-column label="机构名称" prop="Name"></el-table-column>
       <el-table-column label="机构类型" prop="Type"></el-table-column>
@@ -41,6 +42,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 表格分页 -->
+    <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalItems">
+        </el-pagination>
+
     <!-- 编辑页面 -->
     <!-- <el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
       <el-form :model="editForm" label-width="120px" ref="editForm">
@@ -97,7 +109,7 @@
               <el-form-item label="机构类型" prop="Type"
               :rules="[{ required: true, message: '请选择机构类型'}]"
               >
-              <el-select v-model="addForm.Type" placeholder="请选择">
+              <el-select v-model="addForm.Type"   style="width:100%" placeholder="请选择">
                   <el-option
                     v-for="item in typeOpption"
                     :key="item.value"
@@ -105,11 +117,6 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-                <!-- <el-cascader
-                  :options="options1"
-                  v-model="addForm.Type"
-                  @change="handleChange">
-                </el-cascader> -->
               </el-form-item>
               <el-form-item label="负责人" prop="ResponsiblePersonName"  
               :rules="[{ required: true, message: '负责人不能为空'}]"
@@ -138,9 +145,9 @@
               <el-form-item label="状态" prop="State"
               :rules="[{ required: true, message: '请选择状态'}]"
               >
-              <el-select v-model="addForm.State" placeholder="请选择">
+              <el-select v-model="addForm.State" style="width:100%" placeholder="请选择">
                   <el-option
-                    v-for="item in options1"
+                    v-for="item in stateOpption"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -157,36 +164,15 @@
                 </el-date-picker>
                 <el-radio v-model="radio">永久</el-radio>
               </el-form-item>
-              
-              <!-- <el-form-item label="邮箱" prop="chain">
-                <el-input v-model="addForm.chain" auto-complete="off"></el-input>
-              </el-form-item> -->
               <el-form-item label="营业执照">
                 
-                <!-- <input @change="fileChange($event)" type="file" id="upload_file" multiple style="display: none" /> 
-                <div class="add" @click="chooseType">
-                  <div class="add-image" align="center">
-                    <img src="../../assets/xiangji.png" alt="" class="xiangji">
-                    <p class="font13">营业执照上传</p>
-                  </div>
-                </div> -->
-                <!-- <div class="add-img" v-show="imgList.length">
-                  <p class="font14">图片(最多6张，还可上传<span v-text="6-imgList.length"></span>张)</p>
-                  <ul class="img-list">
-                    <li v-for="(url,index) in imgList" :key="index">
-                      <img class="del" @click.stop="delImg(index)" />
-                      <img :src="url.file.src" style="width:150px;height:150px;">
-                    </li>
-                  </ul>
-                </div> -->
+                
                 <el-upload
                   class="avatar-uploader"
                   action="http://210.76.124.110:86/api/v1/file/push"
                   :http-request="uploadFile"  
                   :show-file-list="false"
                   :on-success="handleAvatarSuccess">
-                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-form-item>
             </el-form>
@@ -202,15 +188,7 @@
         </div>
       </div>
     </div>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage"
-      :page-sizes="[5, 10, 15, 20]"
-      :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="totalItems">
-    </el-pagination>
+    
     <div class="_zhe_ceng" v-bind:class="flagFalse ? '_zhe_ceng block' : '_zhe_ceng' ">
       <div class="top">
         <p @click="pCilck">x</p>
@@ -242,9 +220,7 @@
         tempImgs: [],
         editIndex: null,
         list:[],
-        currentPage:1, //初始页
-        pageSize:5,
-        totalItems : 0,
+        
         editFormVisible: false,//编辑界面是否显示
         //编辑界面数据
         editForm: {
@@ -262,10 +238,10 @@
         addFormVisible: false,//新增界面是否显示
         addLoading: false,
         addForm: {
-              "ParentId": "", //(integer, optional): 父节点
+              "ParentId": "9", //(integer, optional): 父节点
               "Type": "",  //(integer, optional): 机构类型，从字典接口获取
               "StaffCnt": "",	//(integer, optional): 职工人数
-              "BusinessLicenseImg": "",  //(string, optional): 营业执照
+              "BusinessLicenseImg": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2735633715,2749454924&fm=27&gp=0.jpg",  //(string, optional): 营业执照
               "CreateAccountId": 35, //(integer, optional): 创建者账号id
               "Name": "", //(string, optional): 名称
               "DescDetail": "",	//(string, optional): 机构详情
@@ -273,72 +249,44 @@
               "State": "", //(integer, optional): 状态，字典获取
               "Expired": "",  //(string, optional): 到期时间
               "ResponsiblePersonName": "",  //(string, optional): 负责人姓名
-              "ResponsiblePersonSex": "",  //(integer, optional): 负责人性别，字典接口获取
+              "ResponsiblePersonSex": "0",  //(integer, optional): 负责人性别，字典接口获取
               "ResponsiblePersonPhone": "",  //(string, optional): 负责人联系电话
-              "Id": "", //(integer, optional),
-              "CreateTime": "", //(integer, optional),
-              "UpdateTime": "" //(integer, optional),
             },
         tableEnd:[],
-        options:[{
-          value:'0',
-          label:'营业'
-        },{
-          value:'1',
-          label:'未营业'
-        }],
-        options1: [{
-          value : 'zhinan',
-          label : '指南'
-        },{
-          value : 'zujian',
-          label : '组件'
-        },{
-          value : 'ziyuan',
-          label : '资源'
-        }],
-        options: [{
-          value : 'zhinan',
-          label : '指南'
-        },{
-          value : 'zujian',
-          label : '组件'
-        },{
-          value : 'ziyuan',
-          label : '资源'
-        }],
         selectedOptions: [],
         selectedOptions1: [],
         value1 : '',
 
-        //用户id
-        accountId : "",
-        //机构列表数据
-        pageTableData : [],
-        //
+       
+        accountId : "", //用户id
+
+        //列表相关
+        pageTableData : [], //机构列表数据
+        currentPage:1, //初始页
+        pageSize: 5,
+        totalItems : 0,
+
+        //机构类型
         typeOpption :[
-          {
-          value : '全部状态',
-          label : '全部状态'
-        },{
-          value : '私企',
-          label : '私企'
-        },{
-          value : '国企',
-          label : '国企'
-        },
-        {
-          value : '外企',
-          label : '外企'
-        },
-        {
-          value : '社区',
-          label : '社区'
-        },
-        {
-          value : '其他',
-          label : '其他'
-        }
+          { value : '全部状态', label : '全部状态' },
+          { value : '私企', label : '私企' },
+          { value : '国企', label : '国企' },
+          { value : '外企', label : '外企' },
+          { value : '社区', label : '社区' },
+          { value : '其他', label : '其他'}
+        ],
+        //状态类型
+        stateOpption :[
+          { value : '正常', label : '正常' },
+          { value : '已停用', label : '已停用' },
+          { value : '已到期', label : '已到期' }
+        ],
+         //查询状态类型
+        stateOpption :[
+          { value : '全部状态', label : '全部状态' },
+          { value : '正常', label : '正常' },
+          { value : '已停用', label : '已停用' },
+          { value : '已到期', label : '已到期' }
         ],
         //营业执照
         imageUrl : ''
@@ -364,17 +312,22 @@
       // }else{
       //   this.tableEnd = this.list
       // }
-      const role = sessionStorage.getItem("role");
-      if(role){
-        const accountId = JSON.parse(role).AccountId;
-        this.accountId = accountId;
-        this.$http.get(`/api/v1/user/${this.accountId}/company `).then(res=>{
-        this.pageTableData = res.data.Obj;
-      })
-      }
+      this.getListData();
        
     },
     methods: {
+      getListData(){
+        const role = sessionStorage.getItem("role");
+        if(role){
+          const accountId = JSON.parse(role).AccountId;
+          this.accountId = accountId;
+          this.$http.get(`/api/v1/user/${this.accountId}/company `)
+            .then(res=>{
+            this.pageTableData = res.data.Obj;
+            this.totalItems = this.pageTableData.length;
+          })
+        }
+      },
       getCouponSelected(){
 　　　  console.log(this.couponSelected)
 　　　},
@@ -405,15 +358,28 @@
         // }
       // })
       },
+       /**
+       * handleSizeChange 列表一页的数量进行改变
+       * @param(val) 改变的数量
+       */
       handleSizeChange(val) {
-        // this.pageSize = val;
+        this.pageSize = val;
         // this.handleCurrentChange(this.currentPage)
       },
-      handleSelectionChange(val) {
+      /**
+       * handleSelectionChange 勾选列表时触发
+       * @param(data) 勾选数据
+       */
+      handleSelectionChange(data) {
+        console.log(val)
         // this.multipleSelection = val;
       },
+      /**
+       * handleCurrentChange 列表页数进行改变
+       * @param(val) 改变的页数
+       */
       handleCurrentChange(val) {
-        // this.currentPage = val;
+        this.currentPage = val;
         // if(!this.flag){
         //   this.currentChangePage(this.tableEnd)
         // }else{
@@ -430,6 +396,9 @@
         //   }
         // }
       },
+
+
+
       handleChange(value) {
         console.log(value);
       },
@@ -446,37 +415,25 @@
         this.addFormVisible = true;
         
       },
-      //新增确定按钮
+      /**
+       * addSubmit 新增机构
+       * @param(formName) 表单名称
+       */
       addSubmit(formName) {
-
         this.$refs[formName].validate((valid) => {
           if (valid) {
             // alert('submit!');
              this.$http.post(`/api/v1/user/${this.accountId}/stafftocompany`,this.addForm)
             //  this.$http.post(`/api/v1/company`,this.addForm)
              .then(res=>{
-                console.log(res)
+                this.addFormVisible = false;
+                 this.getListData();
             })
           } else {
             console.log('error submit!!');
             return false;
           }
         });
-
-        // this.addForm = {
-        //   name: this.addForm.name,
-        //   statutory: this.addForm.statutory,
-        //   phone: this.addForm.phone,
-        //   open:this.addForm.open,
-        //   account: this.addForm.account,
-        //   number:this.addForm.number,
-        //   state:this.addForm.state,
-        //   date:this.addForm.date
-        // }
-        // //console.log(this.addForm)
-        // this.list.unshift(this.addForm)
-        // this.addFormVisible = false;
-        // this.totalItems = this.list.length;
       },
       //显示编辑界面
       handleEdit(index, row) {
@@ -511,14 +468,21 @@
         //   }
         // });
       },
-       //删除
-      handleDel: function (index) {
-        // this.$confirm('确认删除该记录吗？', '提示', {
-        //   type: 'warning'
-        // }).then(() => {
-        //   this.list.splice(index, 1)
-        //   this.totalItems = this.list.length
-        // })
+       /**
+       * handleDel 列表中删除
+       * @param index s 列表的index
+       * @param row  列表的一条数据
+       */
+      handleDel: function (index,row) {
+        this.$confirm('确认删除该记录吗？', '提示', {
+          type: 'warning'
+        }).then(() => {
+          this.$http.delete(`/api/v1/company`,row)
+             .then(res=>{
+                comsole.log(res);
+                this.getListData();
+            })
+        })
       },
       //查询
       getUsers() {
@@ -615,6 +579,10 @@
       },
     },
     computed:{
+      tableList(){
+        console.log(this.pageTableData.slice(( this.currentPage -1 ) * this.pageSize, this.currentPage * this.pageSize))
+        return  this.pageTableData.slice(( this.currentPage -1 ) * this.pageSize, this.currentPage * this.pageSize)
+      }
       // pageTableData(){
       //   let newList=[];
       //   let sonList=[];
