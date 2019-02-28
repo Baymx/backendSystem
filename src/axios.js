@@ -92,7 +92,7 @@ export default {
    * @returns Promise
    */
   post: function (url, param = {}) {
-    // let loadingInstance = Loading.service({text:"提交中"});
+    let loadingInstance = Loading.service({text:"提交中"});
     return new Promise((resolve,reject) => {
       axios({
         method: 'post',
