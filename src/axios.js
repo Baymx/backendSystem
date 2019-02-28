@@ -24,7 +24,7 @@ axios.interceptors.request.use(config => {
       let Sign = md5(`Unicode=${UserTokenInfo.Unicode}&Timestamp=${UserTokenInfo.Timestamp}&Token=${UserTokenInfo.Token}`);
       config.headers = {
         'cache-control': 'no-cache',
-        'content-type' : 'application/x-www-form-urlencoded',
+        'content-type' : 'application/json',
         'Sign': Sign,
         'Timestamp': UserTokenInfo.Timestamp,
         'Unicode': UserTokenInfo.Unicode,
@@ -92,7 +92,7 @@ export default {
    * @returns Promise
    */
   post: function (url, param = {}) {
-    let loadingInstance = Loading.service({text:"提交中"});
+    // let loadingInstance = Loading.service({text:"提交中"});
     return new Promise((resolve,reject) => {
       axios({
         method: 'post',
