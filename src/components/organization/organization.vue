@@ -30,7 +30,7 @@
       <el-table-column label="单位人数" prop="StaffCnt"></el-table-column>
       <el-table-column label="营业执照">
         <template slot-scope="scope">
-          <img :src="scope.row.img" style="width:50px;height:50px" @click="imgBtn(scope.$index)"/>
+          <img :src="scope.row.BusinessLicenseImg" style="width:50px;height:50px" @click="imgBtn(scope.row.BusinessLicenseImg)"/>
         </template>
       </el-table-column>
       <el-table-column label="状态" prop="State"></el-table-column>
@@ -345,22 +345,23 @@
         console.log(res)
       })
     },
-      //图片点击关闭
+      /**
+       * pCilck 图片点击关闭
+       */
       pCilck(){
-        // this.flagFalse =  !this.flagFalse;
+        this.flagFalse =  !this.flagFalse;
       },
-      //图片显示
-      imgBtn(id){
-        // this.flagFalse = !this.flagFalse;
-        // this.pageTableData.map((item,index)=>{
-        // if(index === id){
-        //   this.imgContent = item.img
-        // }
-      // })
+       /**
+       * imgBtn 点击图片放大
+       * @param val 改变的数量
+       */
+      imgBtn(url){
+        this.flagFalse = !this.flagFalse;
+        this.imgContent = url;
       },
        /**
        * handleSizeChange 列表一页的数量进行改变
-       * @param(val) 改变的数量
+       * @param val 改变的数量
        */
       handleSizeChange(val) {
         this.pageSize = val;
@@ -368,7 +369,7 @@
       },
       /**
        * handleSelectionChange 勾选列表时触发
-       * @param(data) 勾选数据
+       * @param data  勾选数据
        */
       handleSelectionChange(data) {
         console.log(val)
@@ -376,7 +377,7 @@
       },
       /**
        * handleCurrentChange 列表页数进行改变
-       * @param(val) 改变的页数
+       * @param val 改变的页数
        */
       handleCurrentChange(val) {
         this.currentPage = val;
