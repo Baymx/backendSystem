@@ -292,17 +292,6 @@
         imageUrl : ''
       }
     },
-    created(){
-      //fetch获取数据
-      // let _this = this
-      // fetch('../../../static/data/data.json').then(function(res){
-      //   return res.json()
-      // }).then(function(stories){
-      //   _this.list = stories
-      // })
-      //下拉菜单
-      //this.department = this.couponList[0].name;
-    },
     mounted(){
       // this.totalItems = this.list.length;
       // if(this.totalItems > this.pageSize){
@@ -316,6 +305,9 @@
        
     },
     methods: {
+       /**
+       * getListData 获取列表信息
+       */
       getListData(){
         const role = sessionStorage.getItem("role");
         if(role){
