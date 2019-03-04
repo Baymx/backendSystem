@@ -47,6 +47,10 @@ axios.interceptors.response.use(response => {
   return response;
 }, err => {
   console.log(err)
+  Message({
+    message: err,
+    type: 'error'
+  })
   return Promise.resolve(err.response);
 });
 
@@ -73,14 +77,16 @@ export default {
         // }
       }).then(res => {
         loadingInstance.close();
-        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
-          resolve(res);
-        }else{
-          var data = res.data;
-          Message({
-            message: data.Message,
-            type: 'error'
-          })
+        if (res.status && res.status == 200) {
+          if (res.data && res.data.Code === 0) {
+            resolve(res);
+          } else {
+            var data = res.data;
+            Message({
+              message: data.Message,
+              type: 'error'
+            })
+          }
         }
       }, reject);
     })
@@ -103,19 +109,58 @@ export default {
         // }
       }).then(res => {
         loadingInstance.close();
-        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
-          var data = res.data;
-          Message({
-            message: data.Message,
-            type: 'success'
-          })
-          resolve(res);
-        }else{
-          var data = res.data;
-          Message({
-            message: data.Message,
-            type: 'error'
-          })
+        if (res.status && res.status == 200) {
+          if (res.data && res.data.Code === 0) {
+            var data = res.data;
+            Message({
+              message: data.Message,
+              type: 'success'
+            })
+            resolve(res);
+          } else {
+            var data = res.data;
+            Message({
+              message: data.Message,
+              type: 'error'
+            })
+          }
+        }
+      }, reject);
+    })
+  },
+  /**
+   * put 提交数据接口
+   * @param url 接口地址
+   * @param param 接口参数
+   * @returns Promise
+   */
+  put: function (url, param = {}) {
+    let loadingInstance = Loading.service({text:"提交中"});
+    return new Promise((resolve,reject) => {
+      axios({
+        method: 'put',
+        url,
+        data: param,
+        // headers: {
+        //   'cache-control': 'no-cache'
+        // }
+      }).then(res => {
+        loadingInstance.close();
+        if (res.status && res.status == 200) {
+          if (res.data && res.data.Code === 0) {
+            var data = res.data;
+            Message({
+              message:  "修改成功",
+              type: 'success'
+            })
+            resolve(res);
+          } else {
+            var data = res.data;
+            Message({
+              message: data.Message,
+              type: 'error'
+            })
+          }
         }
       }, reject);
     })
@@ -138,19 +183,21 @@ export default {
         // }
       }).then(res => {
         loadingInstance.close();
-        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
-          var data = res.data;
-          Message({
-            message: data.Message,
-            type: 'success'
-          })
-          resolve(res);
-        }else{
-          var data = res.data;
-          Message({
-            message: data.Message,
-            type: 'error'
-          })
+        if (res.status && res.status == 200) {
+          if (res.data && res.data.Code === 0) {
+            var data = res.data;
+            Message({
+              message: "删除成功!",
+              type: 'success'
+            })
+            resolve(res);
+          } else {
+            var data = res.data;
+            Message({
+              message: data.Message,
+              type: 'error'
+            })
+          }
         }
       }, reject);
     })

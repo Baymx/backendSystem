@@ -158,6 +158,20 @@ export default {
           star:''
       }
     },
+    /**
+       * getListData 获取列表信息
+       */
+      getListData(){
+        const role = sessionStorage.getItem("role");
+        if(role){
+          const accountId = JSON.parse(role).AccountId;
+          this.accountId = accountId;
+          this.$http.get(`/api/v1/user/${this.accountId}/station `)
+            .then(res=>{
+            console.log(res);
+          })
+        }
+      },
   },
   mounted(){
     this.totalItems = this.typeData.length;
@@ -168,7 +182,9 @@ export default {
     }else{
       this.data = this.typeData
     }
+    this.getListData();
   }
+  
 }
 </script>
 <style scoped>
