@@ -163,7 +163,12 @@
                 <el-radio v-model="radio">永久</el-radio>
               </el-form-item>
               <el-form-item label="营业执照">
+                <div class="show-img" v-if="addForm.BusinessLicenseImg">
+                   <img  :src="addForm.BusinessLicenseImg" class="avatar">
+                  <i class="el-icon-error uploader-delete" @click="addFormDelImg"></i>
+                </div>
                 <el-upload
+                  v-else
                   class="avatar-uploader"
                   :http-request="addUploadFile"
                   action="http://210.76.124.110:86/api/v1/file/push"
@@ -506,6 +511,12 @@ export default {
          */
         delectBusinessLicenseImg (){
           this.editForm.BusinessLicenseImg = '';
+        },
+         /**
+         * addFormDelImg 修改新加机构营业执照图片
+         */
+        addFormDelImg (){
+          this.addForm.BusinessLicenseImg = '';
         },
         /**
          * handleDel 列表中删除
