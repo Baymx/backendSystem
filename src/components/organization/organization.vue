@@ -4,14 +4,14 @@
       <el-col :span="24">
         <el-form :inline="true">
           <el-form-item>
-            <el-input v-model="tion" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
-            <el-input v-model="tion" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
-            <el-select v-model="department" placeholder="全部状态" style="width:130px;">
+            <el-input v-model="searchForm.companyName" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
+            <el-input v-model="searchForm.phone" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
+            <el-select v-model="searchForm.state" placeholder="全部状态" style="width:130px;">
               <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getUsers">查询</el-button>
+            <el-button type="primary" @click="srarch">查询</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleAdd">+新增机构</el-button>
@@ -24,7 +24,11 @@
       <el-table-column label="机构名称" prop="Name"></el-table-column>
       <el-table-column label="机构类型" prop="Type"></el-table-column>
       <el-table-column label="负责人" prop="ResponsiblePersonName"></el-table-column>
-      <el-table-column label="性别" prop="ResponsiblePersonSex"></el-table-column>
+      <el-table-column label="性别" prop="ResponsiblePersonSex">
+        <template slot-scope="scope">
+          <span> {{ scope.row.ResponsiblePersonSex == 0 ? "男" : "女" }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="联系电话" prop="ResponsiblePersonPhone"></el-table-column>
       <el-table-column label="单位地址" prop="ResponsiblePersonPhone"></el-table-column>
       <el-table-column label="单位人数" prop="StaffCnt"></el-table-column>
@@ -33,8 +37,16 @@
           <img :src="scope.row.BusinessLicenseImg" style="width:50px;height:50px" @click="imgBtn(scope.row.BusinessLicenseImg)" />
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="State"></el-table-column>
-      <el-table-column label="创建时间" prop="CreateTime"></el-table-column>
+      <el-table-column label="状态" prop="State">
+        <template slot-scope="scope">
+          <span> {{ stateFilter(scope.row.State) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" prop="CreateTime">
+        <template slot-scope="scope">
+          <span> {{ dateFormat( scope.row.CreateTime ) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" label="操作" width="140">
         <template slot-scope="scope">
           <el-button size="small" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)"></el-button>
@@ -224,7 +236,13 @@ export default {
             tempImgs: [],
             editIndex: null,
             list: [],
-
+            //列表查询条件
+            searchForm: {
+                companyName: '',
+                phone: '',
+                state: '',
+                accountId : ""
+              },
             editFormVisible: false, //编辑界面是否显示
             //编辑界面数据
             editForm: {
@@ -542,20 +560,61 @@ export default {
                     })
             });
         },
-        //查询
-        getUsers() {
-            //把一个含有九个对象的数组value取出来
-            // let brr = []
-            // for (var item in this.list.list) {
-            //   if (Object.values(this.list.list[item]).indexOf(this.filters.name) !== -1) {
-            //     brr.push(this.list.list[item])
-            //   }
-            // }
-            // console.log(brr)
-            // this.list.list = brr;
-            // return brr
-            // this.list = brr;
-            // console.log(this.list);
+         /**
+         * srarch 列表中删除
+         * @param index s 列表的index
+         * @param row  列表的一条数据
+         */
+        srarch() {
+          this.searchForm.accountId = this.accountId;
+          this.$http.get('/api/v1/company/search', this.searchForm).then(res => {
+            this.pageTableData = res.data.Obj || [];
+            this.totalItems = this.pageTableData.length;
+          })
+
+        },
+        /**
+         * stateFilter 状态内容匹配
+         * @param state 状态
+         * @returns value  枚举的label
+         */
+        stateFilter(state){
+          console.log(this.stateSelectOpption)
+          var value = '';
+          this.stateSelectOpption.map(item=>{
+            if(state == item.value){
+              value = item.label;
+              return ;
+            }
+            return ;
+          })
+          return value;
+        },
+        dateFormat  (date) {
+            var date = new Date(date);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var strDate = date.getDate();
+            var hour = date.getHours();
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            if (month >= 1 && month <= 9) {
+                month = "0" + month;
+            }
+            if (strDate >= 0 && strDate <= 9) {
+                strDate = "0" + strDate;
+            }
+            if (hour >= 0 && hour <= 9) {
+                hour = "0" + hour;
+            }
+            if (minute >= 1 && minute <= 9) {
+                minute = "0" + minute;
+            }
+            if (second >= 0 && second <= 9) {
+                second = "0" + second;
+            }
+            var currentdate = year + "-" + month + "-" + strDate +" " + hour + ":" + minute + ":"+ second;
+            return currentdate;
         },
         //上传机构类型
         chooseType() {
