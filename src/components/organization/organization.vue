@@ -4,7 +4,8 @@
       <el-col :span="24">
         <el-form :inline="true">
           <el-form-item>
-            <el-input v-model="tion" placeholder="请输入名称/手机查询关键字" style="width:220px;font-size:12px;"></el-input>
+            <el-input v-model="tion" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
+            <el-input v-model="tion" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
             <el-select v-model="department" placeholder="全部状态" style="width:130px;">
               <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
@@ -80,7 +81,7 @@
         </el-form-item>
         <el-form-item label="状态" prop="State" :rules="[{ required: true, message: '请选择状态'}]">
           <el-select v-model="editForm.State" style="width:100%" placeholder="请选择">
-            <el-option v-for="item in stateOpption" :key="item.value" :label="item.label" :value="item.value">
+            <el-option v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -153,7 +154,7 @@
               </el-form-item>
               <el-form-item label="状态" prop="State" :rules="[{ required: true, message: '请选择状态'}]">
                 <el-select v-model="addForm.State" style="width:100%" placeholder="请选择">
-                  <el-option v-for="item in stateOpption" :key="item.value" :label="item.label" :value="item.value">
+                  <el-option v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -301,12 +302,7 @@ export default {
                 { value: 3, label: "已到期" }
             ],
             //查询状态类型
-            stateSelectOpption: [
-                { value: 0, label: "全部状态" },
-                { value: 1, label: "正常" },
-                { value: 2, label: "已停用" },
-                { value: 3, label: "已到期" }
-            ],
+            stateSelectOpption: [],
             //营业执照
             imageUrl: ""
         };
@@ -316,6 +312,18 @@ export default {
     */
     mounted() {
       this.getList();
+      var parentId =  this.$route.query.parentId  || -1;
+      this.$http.get('/api/v1/consts',{
+            parentId: parentId
+          }).then(res => {
+            console.log(res)
+            res.data.Obj.map(item=>{
+              this.stateSelectOpption.push({
+                value : item.Id,
+                label : item.Name
+              })
+            })
+          })
     },
     methods: {
       /**
