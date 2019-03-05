@@ -297,14 +297,7 @@ export default {
             totalItems: 0,
 
             //机构类型
-            typeOpption: [
-                { value: 0, label: "全部状态" },
-                { value: 1, label: "私企" },
-                { value: 2, label: "国企" },
-                { value: 3, label: "外企" },
-                { value: 4, label: "社区" },
-                { value: "其他", label: "其他" }
-            ],
+            typeOpption: [],
             //状态类型
             stateOpption: [
                 { value: 1, label: "正常" },
@@ -322,13 +315,24 @@ export default {
     */
     mounted() {
       this.getList();
-      var parentId =  this.$route.query.parentId  || -1;
+      var parentId =  this.$route.query.parentId  || 62;
       this.$http.get('/api/v1/consts',{
-            parentId: parentId
+            parentId: 62
           }).then(res => {
             console.log(res)
             res.data.Obj.map(item=>{
               this.stateSelectOpption.push({
+                value : item.Id,
+                label : item.Name
+              })
+            })
+          })
+      this.$http.get('/api/v1/consts',{
+            parentId: 66
+          }).then(res => {
+            console.log(res)
+            res.data.Obj.map(item=>{
+              this.typeOpption.push({
                 value : item.Id,
                 label : item.Name
               })
@@ -471,7 +475,8 @@ export default {
             this.$refs[formName].validate(valid => {
                 if (valid) {
                     // alert('submit!');
-                   this.addForm.parentId = this.$route.query.parentId || -1;
+                    this.addForm.CreateAccountId = this.accountId;
+                    this.addForm.parentId = this.$route.query.parentId || -1;
                     this.$http.post(`/api/v1/user/${this.accountId}/stafftocompany`,this.addForm)
                         .then(res=>{
                           this.addFormVisible = false;
