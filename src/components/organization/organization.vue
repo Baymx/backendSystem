@@ -20,7 +20,7 @@
       </el-col>
     </el-row>
     <el-table style="width: 100%" :data="tableList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55"></el-table-column>
+      <!-- <el-table-column type="selection" width="55"></el-table-column> -->
       <el-table-column label="机构名称" prop="Name"></el-table-column>
       <el-table-column label="机构类型" prop="Type"></el-table-column>
       <el-table-column label="负责人" prop="ResponsiblePersonName"></el-table-column>
@@ -224,17 +224,9 @@ export default {
             flagAdd: true,
             flagFalse: false,
             imgContent: "",
-            department: "",
             tion: "",
-            organ: "",
-            imageUrl: "",
-            showFace: false,
-            imgList: [],
             radio: "",
             size: 0,
-            limit: 6,
-            tempImgs: [],
-            editIndex: null,
             list: [],
             //列表查询条件
             searchForm: {
@@ -342,6 +334,7 @@ export default {
               })
             })
           })
+
     },
     methods: {
       /**
@@ -381,10 +374,13 @@ export default {
                         this.pageTableData = res.data.Obj;
                         this.totalItems = this.pageTableData.length;
                     });
+                    this.$http
+                    .get(`/api/v1/user/${this.accountId}/company `)
+                    .then(res => {
+                        this.pageTableData = res.data.Obj;
+                        this.totalItems = this.pageTableData.length;
+                    });
             }
-        },
-        getCouponSelected() {
-            console.log(this.couponSelected);
         },
         /**
          * addUploadFile 新增上传文件
@@ -454,29 +450,10 @@ export default {
          */
         handleCurrentChange(val) {
             this.currentPage = val;
-            // if(!this.flag){
-            //   this.currentChangePage(this.tableEnd)
-            // }else{
-            //   this.currentChangePage(this.filterTableDataEnd)
-            // }
         },
-        currentChangePage(data, currentPage) {
-            // let from = (this.currentPage -1) * this.pageSize;
-            // let to = this.currentPage * this.pageSize;
-            // this.tableEnd = [];
-            // for(; from<to; from++){
-            //   if(data[from]){
-            //     this.tableEnd.push(data[from])
-            //   }
-            // }
-        },
-
-        handleChange(value) {
-            console.log(value);
-        },
-        handleChange1(value) {
-            console.log(value);
-        },
+        /**
+         * flagClick 关闭图片
+         */
         flagClick() {
             this.addFormVisible = false;
         },
@@ -590,6 +567,11 @@ export default {
           })
           return value;
         },
+        /**
+         * dateFormat 时间格式化
+         * @param date 时间戳
+         * @returns currentdate  格式化时间    YYYY-MM-DD HH:MM:SS
+         */
         dateFormat  (date) {
             var date = new Date(date);
             var year = date.getFullYear();
@@ -615,84 +597,6 @@ export default {
             }
             var currentdate = year + "-" + month + "-" + strDate +" " + hour + ":" + minute + ":"+ second;
             return currentdate;
-        },
-        //上传机构类型
-        chooseType() {
-            document.getElementById("upload_file").click();
-        },
-        fileChange(el) {
-            if (!el.target.files[0].size) return;
-            this.fileList(el.target);
-            el.target.value = "";
-        },
-        fileList(fileList) {
-            let files = fileList.files;
-            for (let i = 0; i < files.length; i++) {
-                //判断是否为文件夹
-                if (files[i].type != "") {
-                    this.fileAdd(files[i]);
-                } else {
-                    //文件夹处理
-                    this.folders(fileList.items[i]);
-                }
-            }
-        },
-        //文件夹处理
-        folders(files) {
-            let _this = this;
-            //判断是否为原生file
-            if (files.kind) {
-                files = files.webkitGetAsEntry();
-            }
-            files.createReader().readEntries(function(file) {
-                for (let i = 0; i < file.length; i++) {
-                    if (file[i].isFile) {
-                        _this.foldersAdd(file[i]);
-                    } else {
-                        _this.folders(file[i]);
-                    }
-                }
-            });
-        },
-        foldersAdd(entry) {
-            let _this = this;
-            entry.file(function(file) {
-                _this.fileAdd(file);
-            });
-        },
-        fileAdd(file) {
-            if (this.limit !== undefined) this.limit--;
-            if (this.limit !== undefined && this.limit < 0) return;
-            //总大小
-            this.size = this.size + file.size;
-            //判断是否为机构类型文件
-            if (file.type.indexOf("image") == -1) {
-                this.$dialog.toast({ mes: "请选择机构类型文件" });
-            } else {
-                let reader = new FileReader();
-                let image = new Image();
-                let _this = this;
-                reader.readAsDataURL(file);
-                reader.onload = function() {
-                    file.src = this.result;
-                    image.onload = function() {
-                        let width = image.width;
-                        let height = image.height;
-                        file.width = width;
-                        file.height = height;
-                        _this.imgList.push({
-                            file
-                        });
-                        // console.log( _this.imgList);
-                    };
-                    image.src = file.src;
-                };
-            }
-        },
-        delImg(index) {
-            this.size = this.size - this.imgList[index].file.size; //总大小
-            this.imgList.splice(index, 1);
-            if (this.limit !== undefined) this.limit = 6 - this.imgList.length;
         }
     },
     computed: {
