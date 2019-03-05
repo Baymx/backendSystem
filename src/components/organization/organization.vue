@@ -476,7 +476,7 @@ export default {
                 if (valid) {
                     // alert('submit!');
                     this.addForm.CreateAccountId = this.accountId;
-                    this.addForm.parentId = this.$route.query.parentId || -1;
+                    this.addForm.ParentId = this.$route.query.parentId || -1;
                     this.$http.post(`/api/v1/user/${this.accountId}/stafftocompany`,this.addForm)
                         .then(res=>{
                           this.addFormVisible = false;
@@ -548,8 +548,18 @@ export default {
          * @param row  列表的一条数据
          */
         srarch() {
-          this.searchForm.accountId = this.accountId;
-          this.$http.get('/api/v1/company/search', this.searchForm).then(res => {
+          var _josn ={ };
+          if(this.searchForm.companyName){
+            _josn['companyName'] = this.searchForm.companyName
+          }
+          if(this.searchForm.phone){
+            _josn['phone'] = this.searchForm.phone
+          }
+          if(this.searchForm.state){
+            _josn['state'] = this.searchForm.state
+          }
+          _josn['AccountId'] = this.accountId;
+          this.$http.get('/api/v1/company/search', _josn).then(res => {
             this.pageTableData = res.data.Obj || [];
             this.totalItems = this.pageTableData.length;
           })
