@@ -643,9 +643,7 @@ export default {
     }
 };
 </script>
-
-<style  lang="scss">
-.content-container {
+<style lang="scss">
     /*上传组件样式*/
     .avatar-uploader {
         .el-upload {
@@ -675,6 +673,11 @@ export default {
     .show-img{
       position: relative;
       width: 178px;
+      .avatar{
+        display: block;
+         width: 178px;
+         height: 178px;
+      }
       .uploader-delete{
         position: absolute;
         top: -5px;
@@ -682,8 +685,9 @@ export default {
         font-size: 20px;
       }
     }
-    
-}
+</style>
+<style scoped lang="scss">
+
 
 .demo-table-expand {
     font-size: 0;
