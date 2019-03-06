@@ -22,7 +22,11 @@
     <el-table style="width: 100%" :data="tableList" @selection-change="handleSelectionChange">
       <!-- <el-table-column type="selection" width="55"></el-table-column> -->
       <el-table-column label="机构名称" prop="Name"></el-table-column>
-      <el-table-column label="机构类型" prop="Type"></el-table-column>
+      <el-table-column label="机构类型" prop="Type">
+        <template slot-scope="scope">
+          <span> {{ typeFilter(scope.row.Type) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="负责人" prop="ResponsiblePersonName"></el-table-column>
       <el-table-column label="性别" prop="ResponsiblePersonSex">
         <template slot-scope="scope">
@@ -477,7 +481,7 @@ export default {
                     // alert('submit!');
                     this.addForm.CreateAccountId = this.accountId;
                     this.addForm.ParentId = this.$route.query.parentId || -1;
-                    this.$http.post(`/api/v1/user/${this.accountId}/stafftocompany`,this.addForm)
+                    this.$http.post(`/api/v1/staff/${this.accountId}/stafftocompany`,this.addForm)
                         .then(res=>{
                           this.addFormVisible = false;
                           this.getList();
@@ -571,7 +575,6 @@ export default {
          * @returns value  枚举的label
          */
         stateFilter(state){
-          console.log(this.stateSelectOpption)
           var value = '';
           this.stateSelectOpption.map(item=>{
             if(state == item.value){
@@ -612,6 +615,22 @@ export default {
             }
             var currentdate = year + "-" + month + "-" + strDate +" " + hour + ":" + minute + ":"+ second;
             return currentdate;
+        },
+        /**
+         * typeFilter 内容匹配
+         * @param type 状态
+         * @returns value  枚举的label
+         */
+        typeFilter(type){
+          var value = '';
+          this.typeOpption.map(item=>{
+            if(type == item.value){
+              value = item.label;
+              return ;
+            }
+            return ;
+          })
+          return value;
         }
     },
     computed: {
