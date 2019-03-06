@@ -4,23 +4,24 @@
       <el-form :inline="true" class="_Post_Management_form">
         <div class="_Post_Management_form_left">
           <el-form-item>
-            <el-input v-model="filters" placeholder="请输入名称/手机查询关键字"></el-input>
+            <el-input v-model="searchForm.stationName" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
+            <el-input v-model="searchForm.phone" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
           </el-form-item>
           <el-form-item label="状态" prop="date">
-            <el-select v-model="department" placeholder="全部类型" style="width:130px;">
+            <el-select v-model="searchForm.state" placeholder="全部类型" style="width:130px;">
               <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getUsers">查询</el-button>
+            <el-button type="primary" @click="srarch">查询</el-button>
           </el-form-item>
         </div>
         <div class="_Post_Management_right">
           <el-form-item style="float:right;">
             <el-button-group>
               <el-button type="primary" @click=" addFormVisible = true">+新增</el-button>
-              <el-button type="primary">修改</el-button>
-              <el-button type="primary">删除</el-button>
+              <!-- <el-button type="primary">修改</el-button>
+              <el-button type="primary">删除</el-button> -->
             </el-button-group>
           </el-form-item>
         </div>
@@ -30,7 +31,7 @@
       <el-table-column fixed prop="Id" label="序号"></el-table-column>
       <el-table-column prop="Name" label="驿站名称"></el-table-column>
       <el-table-column prop="CompanyId" label="所属机构">
-         <template slot-scope="scope">
+        <template slot-scope="scope">
           <span> {{ CompanyFilter(scope.row.CompanyId) }}</span>
         </template>
       </el-table-column>
@@ -53,14 +54,14 @@
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="140">
-      <template slot-scope="scope">
-        <!-- <el-button size="small" icon="el-icon-edit" @click="compileEdit(scope.$index, scope.row)"></el-button> -->
-        <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.$index, scope.row)"></el-button>
-      </template>
-    </el-table-column>
+        <template slot-scope="scope">
+          <el-button size="small" icon="el-icon-edit" @click="EditData(scope.$index, scope.row)"></el-button>
+          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.$index, scope.row)"></el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <!--分页-->
-     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalItems">
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalItems">
     </el-pagination>
 
     <!--新增界面-->
@@ -125,19 +126,23 @@
 export default {
     data() {
         return {
-            filters: "",
-            
             department: "",
             typeData: [],
             currentPage: 1, //初始页
             pagesize: 5,
             totalItems: 0,
             //表格数据
-            tableData:[],
-            totalItems: 0,//列表条数
+            tableData: [],
+            totalItems: 0, //列表条数
             currentPage: 1, //初始页
-            pageSize: 5,//页数大小
-
+            pageSize: 5, //页数大小
+            //列表查询条件
+            searchForm: {
+                stationName: "",
+                phone: "",
+                state: "",
+                accountId: ""
+            },
             //新增界面是否显示
             addFormVisible: false,
             //新增驿站的表单
@@ -209,7 +214,7 @@ export default {
                     });
                 });
         },
-         /**
+        /**
          * handleSizeChange 列表一页的数量进行改变
          * @param val 改变的数量
          */
@@ -228,23 +233,23 @@ export default {
          * @param state 状态
          * @returns value  枚举的label
          */
-        stateFilter(state){
-          var value = '';
-          this.stateSelectOpption.map(item=>{
-            if(state == item.value){
-              value = item.label;
-              return ;
-            }
-            return ;
-          })
-          return value;
+        stateFilter(state) {
+            var value = "";
+            this.stateSelectOpption.map(item => {
+                if (state == item.value) {
+                    value = item.label;
+                    return;
+                }
+                return;
+            });
+            return value;
         },
-         /**
+        /**
          * dateFormat 时间格式化
          * @param date 时间戳
          * @returns currentdate  格式化时间    YYYY-MM-DD HH:MM:SS
          */
-        dateFormat  (date) {
+        dateFormat(date) {
             var date = new Date(date);
             var year = date.getFullYear();
             var month = date.getMonth() + 1;
@@ -267,19 +272,30 @@ export default {
             if (second >= 0 && second <= 9) {
                 second = "0" + second;
             }
-            var currentdate = year + "-" + month + "-" + strDate +" " + hour + ":" + minute + ":"+ second;
+            var currentdate =
+                year +
+                "-" +
+                month +
+                "-" +
+                strDate +
+                " " +
+                hour +
+                ":" +
+                minute +
+                ":" +
+                second;
             return currentdate;
         },
-        CompanyFilter(id){
-          var value = '';
-          this.companyOpption.map(item=>{
-            if(id == item.value){
-              value = item.label;
-              return ;
-            }
-            return ;
-          })
-          return value;
+        CompanyFilter(id) {
+            var value = "";
+            this.companyOpption.map(item => {
+                if (id == item.value) {
+                    value = item.label;
+                    return;
+                }
+                return;
+            });
+            return value;
         },
         currentChangePage(nursing, currentPage) {
             let from = (this.currentPage - 1) * this.pagesize;
@@ -307,8 +323,26 @@ export default {
                 ResponsiblePersonPhone: "" //(string, optional): 负责人联系
             };
         },
-        //查询
-        getUsers() {},
+        /**
+         * srarch 查询
+         */
+        srarch() {
+            var _josn = {};
+            if (this.searchForm.stationName) {
+                _josn["stationName"] = this.searchForm.stationName;
+            }
+            if (this.searchForm.phone) {
+                _josn["phone"] = this.searchForm.phone;
+            }
+            if (this.searchForm.state) {
+                _josn["state"] = this.searchForm.state;
+            }
+            _josn["AccountId"] = this.accountId;
+            this.$http.get("/api/v1/station/search", _josn).then(res => {
+                this.tableData = res.data.Obj || [];
+                this.totalItems = this.tableData.length;
+            });
+        },
         /**
          * addSubmit 新增机构
          * @param formName 表单名称
@@ -344,7 +378,7 @@ export default {
                     .get(`/api/v1/user/${this.accountId}/station `)
                     .then(res => {
                         console.log(res);
-                        this.tableData = res.data.Obj;
+                        this.tableData = res.data.Obj || [];
                         this.totalItems = this.tableData.length;
                     });
             }
@@ -358,13 +392,22 @@ export default {
             this.$confirm("确认删除该记录吗？", "提示", {
                 type: "warning"
             }).then(() => {
-              console.log(row)
-                this.$http.delete('/api/v1/station?id='+row.Id ,row)
-                    .then(res=>{
+                console.log(row);
+                this.$http
+                    .delete("/api/v1/station?id=" + row.Id, row)
+                    .then(res => {
                         this.getListData();
-                    })
+                    });
             });
         },
+        /**
+         * EditData 列表中删除
+         * @param index s 列表的index
+         * @param row  列表的一条数据
+         */
+        EditData(index, row){
+
+        }
     }
 };
 </script>

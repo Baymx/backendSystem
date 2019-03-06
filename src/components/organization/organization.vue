@@ -595,9 +595,7 @@ export default {
             });
         },
          /**
-         * srarch 列表中删除
-         * @param index s 列表的index
-         * @param row  列表的一条数据
+         * srarch 查询
          */
         srarch() {
           var _josn ={ };
