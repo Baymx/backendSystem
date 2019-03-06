@@ -63,7 +63,7 @@
     </el-pagination>
 
     <!-- 编辑页面 -->
-    <el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
+    <el-dialog title="编辑" v-if="editFormVisible" :visible.sync="editFormVisible" :close-on-click-modal="false">
       <el-form :model="editForm" label-width="120px" ref="editForm">
         <el-form-item label="机构名称" prop="Name" :rules="[{ required: true, message: '机构名称不能为空'}]">
           <el-input v-model="editForm.Name" auto-complete="off"></el-input>
@@ -124,13 +124,13 @@
 
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
+        <el-button @click.native="editClose">取消</el-button>
         <el-button type="primary" @click.native="editSubmit('editForm')">提交</el-button>
       </div>
     </el-dialog>
 
     <!--新增界面-->
-    <div class="_order_elasticFrame" v-bind:class="{ '_order_elasticFrame' : flagAdd , '_order_elasticFrame _order_elasticFrame_True' : addFormVisible}">
+    <div class="_order_elasticFrame" v-if="addFormVisible" v-bind:class="{ '_order_elasticFrame' : flagAdd , '_order_elasticFrame _order_elasticFrame_True' : addFormVisible}">
       <div class="_elastic_frame">
         <p class="el-dialog__header">
           <span>新增</span>
@@ -202,7 +202,7 @@
           </div>
           <!-- 上传图片 -->
           <div slot="footer" class="dialog-footer">
-            <el-button @click.native="addFormVisible = false">取消</el-button>
+            <el-button @click.native="flagClick">取消</el-button>
             <el-button type="primary" @click.native="addSubmit('addForm')" :loading="addLoading" v-model="addFormVisible">提交</el-button>
           </div>
         </div>
@@ -464,6 +464,21 @@ export default {
          */
         flagClick() {
             this.addFormVisible = false;
+            this.addForm = {
+                ParentId: "", //(integer, optional): 父节点
+                Type: "", //(integer, optional): 机构类型，从字典接口获取
+                StaffCnt: "", //(integer, optional): 职工人数
+                BusinessLicenseImg: "", //(string, optional): 营业执照
+                CreateAccountId: "", //(integer, optional): 创建者账号id
+                Name: "", //(string, optional): 名称
+                DescDetail: "", //(string, optional): 机构详情
+                Address: "", //(string, optional): 地址
+                State: "", //(integer, optional): 状态，字典获取
+                Expired: "", //(string, optional): 到期时间
+                ResponsiblePersonName: "", //(string, optional): 负责人姓名
+                ResponsiblePersonSex: 0, //(integer, optional): 负责人性别，字典接口获取
+                ResponsiblePersonPhone: "" //(string, optional): 负责人联系电话
+            }
         },
         /**
          * handleAdd 显示新增机构表单
@@ -485,6 +500,21 @@ export default {
                         .then(res=>{
                           this.addFormVisible = false;
                           this.getList();
+                          this.addForm = {
+                                  ParentId: "", //(integer, optional): 父节点
+                                  Type: "", //(integer, optional): 机构类型，从字典接口获取
+                                  StaffCnt: "", //(integer, optional): 职工人数
+                                  BusinessLicenseImg: "", //(string, optional): 营业执照
+                                  CreateAccountId: "", //(integer, optional): 创建者账号id
+                                  Name: "", //(string, optional): 名称
+                                  DescDetail: "", //(string, optional): 机构详情
+                                  Address: "", //(string, optional): 地址
+                                  State: "", //(integer, optional): 状态，字典获取
+                                  Expired: "", //(string, optional): 到期时间
+                                  ResponsiblePersonName: "", //(string, optional): 负责人姓名
+                                  ResponsiblePersonSex: 0, //(integer, optional): 负责人性别，字典接口获取
+                                  ResponsiblePersonPhone: "" //(string, optional): 负责人联系电话
+                          }
                         })
                 } else {
                     console.log("error submit!!");
@@ -511,12 +541,30 @@ export default {
                 this.$confirm('确认提交吗？', '提示', {}).then(() => {
                    this.$http.put(`/api/v1/company `,this.editForm)
                         .then(res=>{
-                          this.editFormVisible = false;
+                          this.editClose();
                           this.getList();
                         })
                 });
               }
             });
+        },
+        editClose :function(){
+          this.editFormVisible = false;
+          this.editForm = {
+                ParentId: "", //(integer, optional): 父节点
+                Type: "", //(integer, optional): 机构类型，从字典接口获取
+                StaffCnt: "", //(integer, optional): 职工人数
+                BusinessLicenseImg: "", //(string, optional): 营业执照
+                CreateAccountId: "", //(integer, optional): 创建者账号id
+                Name: "", //(string, optional): 名称
+                DescDetail: "", //(string, optional): 机构详情
+                Address: "", //(string, optional): 地址
+                State: "", //(integer, optional): 状态，字典获取
+                Expired: "", //(string, optional): 到期时间
+                ResponsiblePersonName: "", //(string, optional): 负责人姓名
+                ResponsiblePersonSex: "", //(integer, optional): 负责人性别，字典接口获取
+                ResponsiblePersonPhone: "" //(string, optional): 负责人联系电话
+            }
         },
         /**
          * updateBusinessLicenseImg 修改营业执照图片
@@ -804,11 +852,6 @@ export default {
     height: 50px;
     line-height: 50px;
     text-align: center;
-}
-.avatar {
-    width: 50px;
-    height: 50px;
-    display: block;
 }
 ._zhe_ceng {
     position: absolute;

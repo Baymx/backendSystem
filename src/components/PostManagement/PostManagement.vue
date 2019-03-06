@@ -8,7 +8,7 @@
           </el-form-item>
           <el-form-item label="状态" prop="date">
             <el-select v-model="department" placeholder="全部类型" style="width:130px;">
-              <el-option style="height:45px;" v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -26,82 +26,95 @@
         </div>
       </el-form>
     </el-row>
-    <el-table :data="listData" style="width: 100%">
-      <el-table-column fixed prop="name" label="序号"></el-table-column>
-      <el-table-column prop="type" label="驿站名称"></el-table-column>
-      <el-table-column prop="experience" label="所属机构"></el-table-column>
-      <el-table-column prop="age" label="负责人"></el-table-column>
-      <el-table-column prop="place" label="性别"></el-table-column>
-      <el-table-column prop="education" label="联系电话"></el-table-column>
-      <el-table-column prop="blood" label="驿站地址"></el-table-column>
-      <el-table-column prop="zodiac" label="状态"></el-table-column>
-      <el-table-column prop="constellation" label="创建时间"></el-table-column>
-      <!-- <el-table-column fixed="right" label="操作" width="140">
+    <el-table :data="tableList" style="width: 100%">
+      <el-table-column fixed prop="Id" label="序号"></el-table-column>
+      <el-table-column prop="Name" label="驿站名称"></el-table-column>
+      <el-table-column prop="CompanyId" label="所属机构">
+         <template slot-scope="scope">
+          <span> {{ CompanyFilter(scope.row.CompanyId) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ResponsiblePersonName" label="负责人"></el-table-column>
+      <el-table-column prop="ResponsiblePersonSex" label="性别">
+        <template slot-scope="scope">
+          <span> {{ scope.row.ResponsiblePersonSex == 0 ? "男" : "女" }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ResponsiblePersonPhone" label="联系电话"></el-table-column>
+      <el-table-column prop="Address" label="驿站地址"></el-table-column>
+      <el-table-column prop="State" label="状态">
+        <template slot-scope="scope">
+          <span> {{ stateFilter(scope.row.State) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="CreateTime" label="创建时间">
+        <template slot-scope="scope">
+          <span> {{ dateFormat( scope.row.CreateTime ) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="140">
       <template slot-scope="scope">
-        <el-button size="small" icon="el-icon-edit" @click="compileEdit(scope.$index, scope.row)"></el-button>
-        <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteAdd(scope.$index, scope.row)"></el-button>
+        <!-- <el-button size="small" icon="el-icon-edit" @click="compileEdit(scope.$index, scope.row)"></el-button> -->
+        <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.$index, scope.row)"></el-button>
       </template>
-    </el-table-column> -->
+    </el-table-column>
     </el-table>
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total='totalItems'>
+    <!--分页-->
+     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalItems">
     </el-pagination>
 
     <!--新增界面-->
-    <el-dialog title="新增" :visible.sync="addFormVisible" width="30%" :before-close="handleClose">
-      <div class="_order_elasticFrame" v-show="addFormVisible">
-        <div class="_elastic_frame">
-          <div class="el-dialog__body">
-            <div class="_organization_from">
-              <el-form :model="addForm" label-width="120px" ref="addForm">
-                <el-form-item label="所属机构" prop="Type" :rules="[{ required: true, message: '请选择所属机构'}]">
-                  <el-select v-model="addForm.CompanyId" style="width:100%" placeholder="请选择">
-                    <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
+    <el-dialog title="新增" v-if="addFormVisible" :visible.sync="addFormVisible" width="40%" :before-close="handleClose">
+      <div class="dialog-body">
+        <div class="_organization_from">
+          <el-form :model="addForm" label-width="120px" ref="addForm">
+            <el-form-item label="所属机构" prop="CompanyId" :rules="[{ required: true, message: '请选择所属机构'}]">
+              <el-select v-model="addForm.CompanyId" style="width:100%" placeholder="请选择">
+                <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
 
-                <el-form-item label="驿站名称" prop="Name" :rules="[{ required: true, message: '机构名称不能为空'}]">
-                  <el-input v-model="addForm.Name" auto-complete="off"></el-input>
-                </el-form-item>
+            <el-form-item label="驿站名称" prop="Name" :rules="[{ required: true, message: '机构名称不能为空'}]">
+              <el-input v-model="addForm.Name" auto-complete="off"></el-input>
+            </el-form-item>
 
-                <el-form-item label="负责人" prop="ResponsiblePersonName" :rules="[{ required: true, message: '负责人不能为空'}]">
-                  <el-input v-model="addForm.ResponsiblePersonName" auto-complete="off"></el-input>
-                </el-form-item>
+            <el-form-item label="负责人" prop="ResponsiblePersonName" :rules="[{ required: true, message: '负责人不能为空'}]">
+              <el-input v-model="addForm.ResponsiblePersonName" auto-complete="off"></el-input>
+            </el-form-item>
 
-                <el-form-item label="性别" prop="ResponsiblePersonSex">
-                  <el-radio-group v-model="addForm.ResponsiblePersonSex">
-                    <el-radio :label="0">男</el-radio>
-                    <el-radio :label="1">女</el-radio>
-                  </el-radio-group>
-                </el-form-item>
+            <el-form-item label="性别" prop="ResponsiblePersonSex">
+              <el-radio-group v-model="addForm.ResponsiblePersonSex">
+                <el-radio :label="0">男</el-radio>
+                <el-radio :label="1">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
 
-                <el-form-item label="联系电话" prop="ResponsiblePersonPhone" :rules="[{ required: true, message: '联系电话不能为空'}]">
-                  <el-input v-model="addForm.ResponsiblePersonPhone" auto-complete="off"></el-input>
-                </el-form-item>
+            <el-form-item label="联系电话" prop="ResponsiblePersonPhone" :rules="[{ required: true, message: '联系电话不能为空'}]">
+              <el-input v-model="addForm.ResponsiblePersonPhone" auto-complete="off"></el-input>
+            </el-form-item>
 
-                <el-form-item label="驿站地址" prop="Address" :rules="[{ required: true, message: '驿站地址不能为空'}]">
-                  <el-input v-model="addForm.Address" auto-complete="off"></el-input>
-                </el-form-item>
+            <el-form-item label="驿站地址" prop="Address" :rules="[{ required: true, message: '驿站地址不能为空'}]">
+              <el-input v-model="addForm.Address" auto-complete="off"></el-input>
+            </el-form-item>
 
-                <el-form-item label="状态" prop="State" :rules="[{ required: true, message: '请选择状态'}]">
-                  <el-select v-model="addForm.State" style="width:100%" placeholder="请选择">
-                    <el-option v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
+            <el-form-item label="状态" prop="State" :rules="[{ required: true, message: '请选择状态'}]">
+              <el-select v-model="addForm.State" style="width:100%" placeholder="请选择">
+                <el-option v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
 
-                <el-form-item label="到期时间" :rules="[{ required: true, message: '请选择到期时间'}]">
-                  <el-date-picker v-model="addForm.Expired" type="date" placeholder="选择日期" style="width:217px">
-                  </el-date-picker>
-                  <!-- <el-radio>永久</el-radio> -->
-                </el-form-item>
-              </el-form>
-            </div>
-            <div slot="footer" class="dialog-footer">
-              <el-button @click.native="addFormVisible = false">取消</el-button>
-              <el-button type="primary" @click.native="addSubmit('addForm')">提交</el-button>
-            </div>
-          </div>
+            <el-form-item label="到期时间" :rules="[{ required: true, message: '请选择到期时间'}]">
+              <el-date-picker v-model="addForm.Expired" type="date" placeholder="选择日期" style="width:217px">
+              </el-date-picker>
+              <!-- <el-radio>永久</el-radio> -->
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click.native="handleClose">取消</el-button>
+          <el-button type="primary" @click.native="addSubmit('addForm')">提交</el-button>
         </div>
       </div>
     </el-dialog>
@@ -113,142 +126,160 @@ export default {
     data() {
         return {
             filters: "",
-            totalItems: 0,
+            
             department: "",
             typeData: [],
             currentPage: 1, //初始页
             pagesize: 5,
             totalItems: 0,
-            options: [
-                {
-                    value: 0,
-                    label: "保姆保洁"
-                },
-                {
-                    value: 1,
-                    label: "月嫂"
-                },
-                {
-                    value: 2,
-                    label: "育婴师"
-                },
-                {
-                    value: 3,
-                    label: "小时工"
-                },
-                {
-                    value: 4,
-                    label: "养老陪护"
-                }
-            ],
+            //表格数据
+            tableData:[],
+            totalItems: 0,//列表条数
+            currentPage: 1, //初始页
+            pageSize: 5,//页数大小
 
             //新增界面是否显示
-            addFormVisible: true,
+            addFormVisible: false,
             //新增驿站的表单
             addForm: {
-                CompanyId: 0, //(integer, optional): 所属机构id
-                Name: "string", //(string, optional): 名称
-                DescDetail: "string", // (string, optional): 机构详情
-                Address: "string", //(string, optional): 地址
-                State: 0, //(integer, optional): 状态，字典获取
-                Expired: "2019-02-27T08:33:37.329Z", //(string, optional): 到期时间
-                ResponsiblePersonName: "string", //(string, optional): 负责人姓名
+                CompanyId: "", //(integer, optional): 所属机构id
+                Name: "", //(string, optional): 名称
+                DescDetail: "", // (string, optional): 机构详情
+                Address: "", //(string, optional): 地址
+                State: "", //(integer, optional): 状态，字典获取
+                Expired: "", //(string, optional): 到期时间
+                ResponsiblePersonName: "", //(string, optional): 负责人姓名
                 ResponsiblePersonSex: 0, //(integer, optional): 负责人性别，字典接口获取
-                ResponsiblePersonPhone: "string" //(string, optional): 负责人联系
+                ResponsiblePersonPhone: "" //(string, optional): 负责人联系
             },
             //机构列表
             companyOpption: [],
             //状态列表
-            stateSelectOpption: []
+            stateSelectOpption: [],
+            //用户id
+            accountId: ""
         };
     },
-    created() {
-        let _this = this;
-        fetch("../../../static/data/list.json")
-            .then(function(res) {
-                return res.json();
-            })
-            .then(function(stories) {
-                console.log(stories);
-                _this.typeData = stories;
-            })
-            .then(function(err) {
-                console.log(err);
-            });
-    },
     computed: {
-        listData() {
-            let newList = [];
-            let sonList = [];
-            var _this = this;
-            var NewItems = [];
-            let pages = Math.ceil(_this.typeData.length / _this.pagesize); //8为每页设置数量
-            for (let i = 0; i < pages; i++) {
-                sonList = _this.typeData.slice(
-                    i * _this.pagesize,
-                    i * _this.pagesize + _this.pagesize
-                ); //8为每页设置数量
-                newList.push(sonList);
-            }
-            if (_this.filters !== "") {
-                _this.typeData.map(item => {
-                    if (item.name.indexOf(_this.filters) != -1) {
-                        NewItems.push(item);
-                    }
-                });
-                _this.totalItems = NewItems.length;
-                return NewItems;
-            }
-            _this.totalItems = _this.typeData.length;
-            return newList[_this.currentPage - 1];
+        tableList() {
+            return this.tableData.slice(
+                (this.currentPage - 1) * this.pageSize,
+                this.currentPage * this.pageSize
+            );
         }
     },
     /**
      * mounted 加载
      */
     mounted() {
+        const role = sessionStorage.getItem("role");
+        if (role) {
+            const accountId = JSON.parse(role).AccountId;
+            this.accountId = accountId;
+        }
         this.getListData();
-        var parentId = this.$route.query.parentId || 62;
-        this.$http
-            .get("/api/v1/consts", {
-                parentId: 62
-            })
-            .then(res => {
-                console.log(res);
-                res.data.Obj.map(item => {
-                    this.stateSelectOpption.push({
-                        value: item.Id,
-                        label: item.Name
-                    });
-                });
-            });
-        this.$http
-            .get("/api/v1/consts", {
-                parentId: 66
-            })
-            .then(res => {
-                console.log(res);
-                res.data.Obj.map(item => {
-                    this.companyOpption.push({
-                        value: item.Id,
-                        label: item.Name
-                    });
-                });
-            });
+        this.const();
     },
     methods: {
-        //分页
-        handleSizeChange(val) {
-            this.pagesize = val;
-            this.handleCurrentChange(this.currentPage);
+        /**
+         * const 获取常量
+         */
+        const() {
+            const parentId = this.$route.query.parentId || 62;
+            this.$http
+                .get("/api/v1/consts", {
+                    parentId: 62
+                })
+                .then(res => {
+                    res.data.Obj.map(item => {
+                        this.stateSelectOpption.push({
+                            value: item.Id,
+                            label: item.Name
+                        });
+                    });
+                });
+            this.$http
+                .get(`/api/v1/user/${this.accountId}/company`)
+                .then(res => {
+                    res.data.Obj.map(item => {
+                        this.companyOpption.push({
+                            value: item.Id,
+                            label: item.Name
+                        });
+                    });
+                });
         },
+         /**
+         * handleSizeChange 列表一页的数量进行改变
+         * @param val 改变的数量
+         */
+        handleSizeChange(val) {
+            this.pageSize = val;
+        },
+        /**
+         * handleCurrentChange 列表页数进行改变
+         * @param val 改变的页数
+         */
         handleCurrentChange(val) {
             this.currentPage = val;
-            if (!this.flag) {
-                this.currentChangePage(this.data);
-            } else {
-                this.currentChangePage(this.filterTableDataEnd);
+        },
+        /**
+         * stateFilter 状态内容匹配
+         * @param state 状态
+         * @returns value  枚举的label
+         */
+        stateFilter(state){
+          var value = '';
+          this.stateSelectOpption.map(item=>{
+            if(state == item.value){
+              value = item.label;
+              return ;
             }
+            return ;
+          })
+          return value;
+        },
+         /**
+         * dateFormat 时间格式化
+         * @param date 时间戳
+         * @returns currentdate  格式化时间    YYYY-MM-DD HH:MM:SS
+         */
+        dateFormat  (date) {
+            var date = new Date(date);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var strDate = date.getDate();
+            var hour = date.getHours();
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            if (month >= 1 && month <= 9) {
+                month = "0" + month;
+            }
+            if (strDate >= 0 && strDate <= 9) {
+                strDate = "0" + strDate;
+            }
+            if (hour >= 0 && hour <= 9) {
+                hour = "0" + hour;
+            }
+            if (minute >= 1 && minute <= 9) {
+                minute = "0" + minute;
+            }
+            if (second >= 0 && second <= 9) {
+                second = "0" + second;
+            }
+            var currentdate = year + "-" + month + "-" + strDate +" " + hour + ":" + minute + ":"+ second;
+            return currentdate;
+        },
+        CompanyFilter(id){
+          var value = '';
+          this.companyOpption.map(item=>{
+            if(id == item.value){
+              value = item.label;
+              return ;
+            }
+            return ;
+          })
+          return value;
         },
         currentChangePage(nursing, currentPage) {
             let from = (this.currentPage - 1) * this.pagesize;
@@ -264,6 +295,17 @@ export default {
          */
         handleClose() {
             this.addFormVisible = false;
+            this.addForm = {
+                CompanyId: "", //(integer, optional): 所属机构id
+                Name: "", //(string, optional): 名称
+                DescDetail: "", // (string, optional): 机构详情
+                Address: "", //(string, optional): 地址
+                State: "", //(integer, optional): 状态，字典获取
+                Expired: "", //(string, optional): 到期时间
+                ResponsiblePersonName: "", //(string, optional): 负责人姓名
+                ResponsiblePersonSex: 0, //(integer, optional): 负责人性别，字典接口获取
+                ResponsiblePersonPhone: "" //(string, optional): 负责人联系
+            };
         },
         //查询
         getUsers() {},
@@ -274,14 +316,16 @@ export default {
         addSubmit(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    // alert('submit!');
                     this.addForm.CreateAccountId = this.accountId;
-                    this.addForm.ParentId = this.$route.query.parentId || -1;
-                    this.$http.post(`/api/v1/staff/${this.accountId}/stafftocompany`,this.addForm)
-                        .then(res=>{
-                          this.addFormVisible = false;
-                          this.getList();
-                        })
+                    this.$http
+                        .post(
+                            `/api/v1/user/${this.accountId}/stafftostation`,
+                            this.addForm
+                        )
+                        .then(res => {
+                            this.handleClose();
+                            this.getListData();
+                        });
                 } else {
                     console.log("error submit!!");
                     return false;
@@ -300,13 +344,40 @@ export default {
                     .get(`/api/v1/user/${this.accountId}/station `)
                     .then(res => {
                         console.log(res);
+                        this.tableData = res.data.Obj;
+                        this.totalItems = this.tableData.length;
                     });
             }
-        }
+        },
+        /**
+         * deleteData 列表中删除
+         * @param index s 列表的index
+         * @param row  列表的一条数据
+         */
+        deleteData: function(index, row) {
+            this.$confirm("确认删除该记录吗？", "提示", {
+                type: "warning"
+            }).then(() => {
+              console.log(row)
+                this.$http.delete('/api/v1/station?id='+row.Id ,row)
+                    .then(res=>{
+                        this.getListData();
+                    })
+            });
+        },
     }
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
+.dialog-body {
+    .dialog-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 30px;
+    }
+}
+
 ._Post_Management_form {
     display: flex;
     justify-content: space-between;
