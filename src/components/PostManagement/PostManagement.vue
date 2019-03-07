@@ -1,126 +1,126 @@
 <template>
-  <div class="_Post_Management">
-    <el-row class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true" class="_Post_Management_form">
-        <div class="_Post_Management_form_left">
-          <el-form-item>
-            <el-input v-model="searchForm.stationName" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
-            <el-input v-model="searchForm.phone" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
-          </el-form-item>
-          <el-form-item label="状态" prop="date">
-            <el-select v-model="searchForm.state" placeholder="全部类型" style="width:130px;">
-              <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="srarch">查询</el-button>
-          </el-form-item>
-        </div>
-        <div class="_Post_Management_right">
-          <el-form-item style="float:right;">
-            <el-button-group>
-              <el-button type="primary" @click=" addFormVisible = true">+新增</el-button>
-              <!-- <el-button type="primary">修改</el-button>
+    <div class="_Post_Management">
+        <el-row class="toolbar" style="padding-bottom: 0px;">
+            <el-form :inline="true" class="_Post_Management_form">
+                <div class="_Post_Management_form_left">
+                    <el-form-item>
+                        <el-input v-model="searchForm.stationName" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
+                        <el-input v-model="searchForm.phone" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态" prop="date">
+                        <el-select v-model="searchForm.state" placeholder="全部类型" style="width:130px;">
+                            <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="srarch">查询</el-button>
+                    </el-form-item>
+                </div>
+                <div class="_Post_Management_right">
+                    <el-form-item style="float:right;">
+                        <el-button-group>
+                            <el-button type="primary" @click=" addFormVisible = true">+新增</el-button>
+                            <!-- <el-button type="primary">修改</el-button>
               <el-button type="primary">删除</el-button> -->
-            </el-button-group>
-          </el-form-item>
-        </div>
-      </el-form>
-    </el-row>
-    <el-table :data="tableList" style="width: 100%">
-      <el-table-column fixed prop="Id" label="序号"></el-table-column>
-      <el-table-column prop="Name" label="驿站名称"></el-table-column>
-      <el-table-column prop="CompanyId" label="所属机构">
-        <template slot-scope="scope">
-          <span> {{ CompanyFilter(scope.row.CompanyId) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="ResponsiblePersonName" label="负责人"></el-table-column>
-      <el-table-column prop="ResponsiblePersonSex" label="性别">
-        <template slot-scope="scope">
-          <span> {{ scope.row.ResponsiblePersonSex == 0 ? "男" : "女" }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="ResponsiblePersonPhone" label="联系电话"></el-table-column>
-      <el-table-column prop="Address" label="驿站地址"></el-table-column>
-      <el-table-column prop="State" label="状态">
-        <template slot-scope="scope">
-          <span> {{ stateFilter(scope.row.State) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="CreateTime" label="创建时间">
-        <template slot-scope="scope">
-          <span> {{ dateFormat( scope.row.CreateTime ) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" label="操作" width="140">
-        <template slot-scope="scope">
-          <el-button size="small" icon="el-icon-edit" @click="EditData(scope.$index, scope.row)"></el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.$index, scope.row)"></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--分页-->
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalItems">
-    </el-pagination>
+                        </el-button-group>
+                    </el-form-item>
+                </div>
+            </el-form>
+        </el-row>
+        <el-table :data="tableList" style="width: 100%">
+            <el-table-column fixed prop="Id" label="序号"></el-table-column>
+            <el-table-column prop="Name" label="驿站名称"></el-table-column>
+            <el-table-column prop="CompanyId" label="所属机构">
+                <template slot-scope="scope">
+                    <span> {{ CompanyFilter(scope.row.CompanyId) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="ResponsiblePersonName" label="负责人"></el-table-column>
+            <el-table-column prop="ResponsiblePersonSex" label="性别">
+                <template slot-scope="scope">
+                    <span> {{ scope.row.ResponsiblePersonSex == 0 ? "男" : "女" }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="ResponsiblePersonPhone" label="联系电话"></el-table-column>
+            <el-table-column prop="Address" label="驿站地址"></el-table-column>
+            <el-table-column prop="State" label="状态">
+                <template slot-scope="scope">
+                    <span> {{ stateFilter(scope.row.State) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="CreateTime" label="创建时间">
+                <template slot-scope="scope">
+                    <span> {{ dateFormat( scope.row.CreateTime ) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="140">
+                <template slot-scope="scope">
+                    <el-button size="small" icon="el-icon-edit" @click="EditData(scope.$index, scope.row)"></el-button>
+                    <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.$index, scope.row)"></el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalItems">
+        </el-pagination>
 
-    <!--新增界面-->
-    <el-dialog title="新增" v-if="addFormVisible" :visible.sync="addFormVisible" width="40%" :before-close="handleClose">
-      <div class="dialog-body">
-        <div class="_organization_from">
-          <el-form :model="addForm" label-width="120px" ref="addForm">
-            <el-form-item label="所属机构" prop="CompanyId" :rules="[{ required: true, message: '请选择所属机构'}]">
-              <el-select v-model="addForm.CompanyId" style="width:100%" placeholder="请选择">
-                <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+        <!--新增界面-->
+        <el-dialog title="新增" v-if="addFormVisible" :visible.sync="addFormVisible" width="40%" :before-close="handleClose">
+            <div class="dialog-body">
+                <div class="_organization_from">
+                    <el-form :model="addForm" label-width="120px" ref="addForm">
+                        <el-form-item label="所属机构" prop="CompanyId" :rules="[{ required: true, message: '请选择所属机构'}]">
+                            <el-select v-model="addForm.CompanyId" style="width:100%" placeholder="请选择">
+                                <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
 
-            <el-form-item label="驿站名称" prop="Name" :rules="[{ required: true, message: '机构名称不能为空'}]">
-              <el-input v-model="addForm.Name" auto-complete="off"></el-input>
-            </el-form-item>
+                        <el-form-item label="驿站名称" prop="Name" :rules="[{ required: true, message: '机构名称不能为空'}]">
+                            <el-input v-model="addForm.Name" auto-complete="off"></el-input>
+                        </el-form-item>
 
-            <el-form-item label="负责人" prop="ResponsiblePersonName" :rules="[{ required: true, message: '负责人不能为空'}]">
-              <el-input v-model="addForm.ResponsiblePersonName" auto-complete="off"></el-input>
-            </el-form-item>
+                        <el-form-item label="负责人" prop="ResponsiblePersonName" :rules="[{ required: true, message: '负责人不能为空'}]">
+                            <el-input v-model="addForm.ResponsiblePersonName" auto-complete="off"></el-input>
+                        </el-form-item>
 
-            <el-form-item label="性别" prop="ResponsiblePersonSex">
-              <el-radio-group v-model="addForm.ResponsiblePersonSex">
-                <el-radio :label="0">男</el-radio>
-                <el-radio :label="1">女</el-radio>
-              </el-radio-group>
-            </el-form-item>
+                        <el-form-item label="性别" prop="ResponsiblePersonSex">
+                            <el-radio-group v-model="addForm.ResponsiblePersonSex">
+                                <el-radio :label="0">男</el-radio>
+                                <el-radio :label="1">女</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
 
-            <el-form-item label="联系电话" prop="ResponsiblePersonPhone" :rules="[{ required: true, message: '联系电话不能为空'}]">
-              <el-input v-model="addForm.ResponsiblePersonPhone" auto-complete="off"></el-input>
-            </el-form-item>
+                        <el-form-item label="联系电话" prop="ResponsiblePersonPhone" :rules="[{ required: true, message: '联系电话不能为空'}]">
+                            <el-input v-model="addForm.ResponsiblePersonPhone" auto-complete="off"></el-input>
+                        </el-form-item>
 
-            <el-form-item label="驿站地址" prop="Address" :rules="[{ required: true, message: '驿站地址不能为空'}]">
-              <el-input v-model="addForm.Address" auto-complete="off"></el-input>
-            </el-form-item>
+                        <el-form-item label="驿站地址" prop="Address" :rules="[{ required: true, message: '驿站地址不能为空'}]">
+                            <el-input v-model="addForm.Address" auto-complete="off"></el-input>
+                        </el-form-item>
 
-            <el-form-item label="状态" prop="State" :rules="[{ required: true, message: '请选择状态'}]">
-              <el-select v-model="addForm.State" style="width:100%" placeholder="请选择">
-                <el-option v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+                        <el-form-item label="状态" prop="State" :rules="[{ required: true, message: '请选择状态'}]">
+                            <el-select v-model="addForm.State" style="width:100%" placeholder="请选择">
+                                <el-option v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
 
-            <el-form-item label="到期时间" :rules="[{ required: true, message: '请选择到期时间'}]">
-              <el-date-picker v-model="addForm.Expired" type="date" placeholder="选择日期" style="width:217px">
-              </el-date-picker>
-              <!-- <el-radio>永久</el-radio> -->
-            </el-form-item>
-          </el-form>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click.native="handleClose">取消</el-button>
-          <el-button type="primary" @click.native="addSubmit('addForm')">提交</el-button>
-        </div>
-      </div>
-    </el-dialog>
+                        <el-form-item label="到期时间" :rules="[{ required: true, message: '请选择到期时间'}]">
+                            <el-date-picker v-model="addForm.Expired" type="date" placeholder="选择日期" style="width:217px">
+                            </el-date-picker>
+                            <!-- <el-radio>永久</el-radio> -->
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click.native="handleClose">取消</el-button>
+                    <el-button type="primary" @click.native="addSubmit('addForm')">提交</el-button>
+                </div>
+            </div>
+        </el-dialog>
 
-  </div>
+    </div>
 </template>
 <script>
 export default {
@@ -204,7 +204,7 @@ export default {
                     });
                 });
             this.$http
-                .get(`/api/v1/user/${this.accountId}/company`)
+                .get(`/api/v1/staff/${this.accountId}/company`)
                 .then(res => {
                     res.data.Obj.map(item => {
                         this.companyOpption.push({
@@ -405,9 +405,7 @@ export default {
          * @param index s 列表的index
          * @param row  列表的一条数据
          */
-        EditData(index, row){
-
-        }
+        EditData(index, row) {}
     }
 };
 </script>
