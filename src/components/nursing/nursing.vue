@@ -61,6 +61,17 @@
           <img style="width:50px;height:50px" @click="imgBtn(scope.row.BusinessLicenseImg)" :src="scope.row.HeadUrl" />
         </template>
       </el-table-column>
+      <el-table-column prop="SelfIntroduce" label="自我介绍">
+        <template slot-scope="scope">
+         <el-tooltip class="item" effect="dark" :content="scope.row.SelfIntroduce" placement="right-end">
+            <p style="height:100%;overflow:hidden; 
+        text-overflow:ellipsis;
+        display:-webkit-box; 
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:3; line-height: 16px;"> {{ scope.row.SelfIntroduce }}</p>
+        </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column prop="CreateTime" label="创建时间">
         <template slot-scope="scope">
           <span> {{ dateFormat( scope.row.CreateTime) }}</span>
@@ -163,7 +174,6 @@ export default {
         return {
             department: "",
             typeData: [],
-            currentPage: 1, //初始页
             pagesize: 5,
             totalItems: 0,
             //表格数据
@@ -380,6 +390,7 @@ export default {
             this.$http.get("/api/v1/station/search", _josn).then(res => {
                 this.tableData = res.data.Obj || [];
                 this.totalItems = this.tableData.length;
+                this.currentPage = 1;
             });
         },
         /**
@@ -436,6 +447,7 @@ export default {
                         console.log(res);
                         this.tableData = res.data.Obj || [];
                         this.totalItems = this.tableData.length;
+                        this.currentPage = 1;
                     });
             }
         },
@@ -493,6 +505,13 @@ export default {
     }
 };
 </script>
+<style lang="scss">
+
+    .el-table .cell {
+      height: 50px;
+    }
+</style>
+
 <style lang="scss" scoped>
 .dialog-body {
     .from {

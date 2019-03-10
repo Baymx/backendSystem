@@ -341,6 +341,7 @@ export default {
             this.$http.get("/api/v1/station/search", _josn).then(res => {
                 this.tableData = res.data.Obj || [];
                 this.totalItems = this.tableData.length;
+                 this.currentPage = 1;
             });
         },
         /**
@@ -380,6 +381,7 @@ export default {
                         console.log(res);
                         this.tableData = res.data.Obj || [];
                         this.totalItems = this.tableData.length;
+                         this.currentPage = 1;
                     });
             }
         },
