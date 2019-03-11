@@ -4,11 +4,11 @@
       <el-form :inline="true" class="nursing_form">
         <div class="">
           <el-form-item>
-            <el-input v-model="searchForm.stationName" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
+            <el-input v-model="searchForm.name" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
             <el-input v-model="searchForm.phone" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="srarch">查询</el-button>
+            <el-button type="primary" @click="getListData">查询</el-button>
           </el-form-item>
         </div>
         <div class="">
@@ -91,7 +91,7 @@
         <div class="from">
           <el-form :model="addForm" label-width="120px" ref="addForm">
             <el-form-item label="所属机构" prop="CompanyId">
-              <el-select v-model="addForm.CompanyId" style="width:100%" @change="companyChange" placeholder="请选择">
+              <el-select v-model="addForm.CompanyId" style="width:100%"  placeholder="请选择">
                 <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -169,7 +169,7 @@
         <div class="from">
           <el-form :model="editForm" label-width="120px" ref="editForm">
             <el-form-item label="所属机构" prop="CompanyId">
-              <el-select v-model="editForm.CompanyId" style="width:100%" @change="companyChange" placeholder="请选择">
+              <el-select v-model="editForm.CompanyId" style="width:100%"  placeholder="请选择">
                 <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -177,7 +177,7 @@
 
             <el-form-item label="所属驿站" prop="StationId">
               <el-select v-model="editForm.StationId	" style="width:100%" placeholder="请选择">
-                <el-option v-for="item in stationOpption"  :key="item.value" :label="item.label" :value="item.value">
+                <el-option v-for="item in stationOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -252,10 +252,11 @@ export default {
             pageSize: 10, //页数大小
             //列表查询条件
             searchForm: {
-                stationName: "",
+                name: "",
                 phone: "",
-                state: "",
-                accountId: ""
+                accountId: "",
+                page: this.currentPage,
+                row: this.pageSize
             },
             //新增界面是否显示
             addFormVisible: false,
@@ -332,7 +333,7 @@ export default {
                 .then(res => {
                     res.data.Obj.map(item => {
                         this.companyOpption.push({
-                            value: item.Id +'',
+                            value: item.Id + "",
                             label: item.Name
                         });
                     });
@@ -342,11 +343,11 @@ export default {
                 .then(res => {
                     res.data.Obj.map(item => {
                         this.stationOpption.push({
-                            value: item.Id+ '',
+                            value: item.Id + "",
                             label: item.Name
                         });
                     });
-                    console.log(this.stationOpption)
+                    console.log(this.stationOpption);
                 });
         },
         /**
@@ -410,18 +411,6 @@ export default {
                 return currentdate;
             }
         },
-        CompanyFilter(id) {
-            console.log(id);
-            var value = "";
-            this.companyOpption.map(item => {
-                if (id == item.value) {
-                    value = item.label;
-                    return;
-                }
-                return;
-            });
-            return value;
-        },
         currentChangePage(nursing, currentPage) {
             let from = (this.currentPage - 1) * this.pagesize;
             let to = this.currentPage * this.pagesize;
@@ -476,27 +465,6 @@ export default {
             };
         },
         /**
-         * srarch 查询
-         */
-        srarch() {
-            var _josn = {};
-            if (this.searchForm.stationName) {
-                _josn["stationName"] = this.searchForm.stationName;
-            }
-            if (this.searchForm.phone) {
-                _josn["phone"] = this.searchForm.phone;
-            }
-            if (this.searchForm.state) {
-                _josn["state"] = this.searchForm.state;
-            }
-            _josn["AccountId"] = this.accountId;
-            this.$http.get("/api/v1/station/search", _josn).then(res => {
-                this.tableData = res.data.Obj || [];
-                this.totalItems = this.tableData.length;
-                this.currentPage = 1;
-            });
-        },
-        /**
          * addSubmit 新增
          * @param formName 表单名称
          */
@@ -519,7 +487,10 @@ export default {
                             });
                     } else {
                         this.$http
-                            .post(`/api/v1/company/${CompanyId}/staffinfo`, _josn)
+                            .post(
+                                `/api/v1/company/${CompanyId}/staffinfo`,
+                                _josn
+                            )
                             .then(res => {
                                 this.handleClose();
                                 this.getListData();
@@ -540,17 +511,21 @@ export default {
                 const accountId = JSON.parse(role).AccountId;
                 this.accountId = accountId;
                 const excludeAccountIds = [];
+
                 this.$http
                     .post(
                         `/api/v1/staff/${this.accountId}/allstaffinfos?page=
-                    ${this.currentPage}&row=${this.pageSize}
-                    &excludeAccountIds=${excludeAccountIds}`
+                    ${this.currentPage}&row=${this.pageSize}&phone=${this.searchForm.phone}`
                     )
                     .then(res => {
                         console.log(res);
                         this.tableData = res.data.Obj || [];
-                        this.totalItems = this.tableData.length;
                         this.currentPage = 1;
+                    });
+                this.$http
+                    .post(`/api/v1/staff/${this.accountId}/allstaff/cnt`)
+                    .then(res => {
+                        this.totalItems = res.data.Obj;
                     });
             }
         },
@@ -627,7 +602,7 @@ export default {
                 const companyId = row.BelongInfo[0].split(",")[0];
                 if (companyId == -1) {
                     this.editForm.StationId = stationId;
-                } else if(stationId == -1) {
+                } else if (stationId == -1) {
                     this.editForm.CompanyId = companyId;
                 }
 
@@ -636,21 +611,6 @@ export default {
                 this.editFormVisible = true;
                 console.log(this.editForm);
             }
-        },
-        /**
-         * companyChange 机构改变时调用
-         * @param val 选择的值
-         */
-        companyChange(val) {
-            console.log(val);
-            this.$http.get(`/api/v1/company/${val}/station`).then(res => {
-                res.data.Obj.map(item => {
-                    this.postOpption.push({
-                        value: item.Id,
-                        label: item.Name
-                    });
-                });
-            });
         },
         /**
          * editFormClose 关闭修改弹出层
@@ -691,8 +651,8 @@ export default {
         /**
          * delectImg 修改头像
          */
-        delectImg (){
-          this.editForm.HeadUrl = '';
+        delectImg() {
+            this.editForm.HeadUrl = "";
         },
         /**
          * editUploadFile 新增上传文件
@@ -701,15 +661,14 @@ export default {
         editUploadFile(params) {
             const _file = params.file;
             var formData = new FormData();
-            let fileName = _file.name.split(',');
+            let fileName = _file.name.split(",");
             formData.append("file", _file);
             formData.append("accountId", this.accountId);
             formData.append("extension", fileName[fileName.length - 1]);
-            return this.$http.post(`/api/v1/file/push`,formData)
-            .then(res=>{
-              this.editForm.HeadUrl = res.data.Obj[0]
-            })
-        },
+            return this.$http.post(`/api/v1/file/push`, formData).then(res => {
+                this.editForm.HeadUrl = res.data.Obj[0];
+            });
+        }
     }
 };
 </script>
