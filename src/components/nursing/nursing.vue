@@ -249,7 +249,7 @@ export default {
             tableData: [],
             totalItems: 0, //列表条数
             currentPage: 1, //初始页
-            pageSize: 5, //页数大小
+            pageSize: 10, //页数大小
             //列表查询条件
             searchForm: {
                 stationName: "",
@@ -332,7 +332,7 @@ export default {
                 .then(res => {
                     res.data.Obj.map(item => {
                         this.companyOpption.push({
-                            value: item.Id,
+                            value: item.Id +'',
                             label: item.Name
                         });
                     });
@@ -519,7 +519,7 @@ export default {
                             });
                     } else {
                         this.$http
-                            .post(`/api/v1/station/${CompanyId}/staff`, _josn)
+                            .post(`/api/v1/company/${CompanyId}/staffinfo`, _josn)
                             .then(res => {
                                 this.handleClose();
                                 this.getListData();
@@ -627,8 +627,7 @@ export default {
                 const companyId = row.BelongInfo[0].split(",")[0];
                 if (companyId == -1) {
                     this.editForm.StationId = stationId;
-                } else {
-                    this.editForm.StationId = stationId;
+                } else if(stationId == -1) {
                     this.editForm.CompanyId = companyId;
                 }
 
