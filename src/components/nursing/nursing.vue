@@ -30,51 +30,53 @@
 
       <el-table-column prop="CompanyId" label="所属机构">
         <template slot-scope="scope">
-          <span> {{ CompanyFilter(scope.row.CompanyId) }}</span>
+          <span> {{ scope.row.BelongInfo[0].split(',')[1] }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="CompanyId" label="所属驿站">
-        <!-- <template slot-scope="scope">
-          <span> {{ CompanyFilter(scope.row.CompanyId) }}</span>
-        </template> -->
-      </el-table-column>
-      <el-table-column prop="Name" label="姓名"></el-table-column>
-      <el-table-column prop="Sex" label="性别">
-        <template slot-scope="scope">
-          <span> {{ scope.row.Sex == 0 ? "男" : "女" }}</span>
+       <template slot-scope="scope">
+          <span> {{ scope.row.BelongInfo[0].split(',')[3] }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="Birthday" label="出生日期">
+      <el-table-column prop="StaffInfo.Name" label="姓名">
+        
+      </el-table-column>
+      <el-table-column prop="StaffInfo.Sex" label="性别">
         <template slot-scope="scope">
-          <span> {{ dateFormat( scope.row.Birthday, true) }}</span>
+          <span> {{ scope.row.StaffInfo.Sex == 0 ? "男" : "女" }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="Phone" label="联系电话"></el-table-column>
-      <el-table-column prop="Addr" label="联系地址"></el-table-column>
-      <el-table-column prop="State" label="状态">
+      <el-table-column prop="StaffInfo.Birthday" label="出生日期">
         <template slot-scope="scope">
-          <span> {{ scope.row.State == 0 ? "启用" : "禁用" }}</span>
+          <span> {{ dateFormat( scope.row.StaffInfo.Birthday, true) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="HeadUrl" label="头像">
+      <el-table-column prop="StaffInfo.Phone" label="联系电话"></el-table-column>
+      <el-table-column prop="StaffInfo.Addr" label="联系地址"></el-table-column>
+      <el-table-column prop="StaffInfo.State" label="状态">
         <template slot-scope="scope">
-          <img style="width:50px;height:50px" @click="imgBtn(scope.row.BusinessLicenseImg)" :src="scope.row.HeadUrl" />
+          <span> {{ scope.row.StaffInfo.State == 0 ? "启用" : "禁用" }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="SelfIntroduce" label="自我介绍">
+      <el-table-column prop="StaffInfo.HeadUrl" label="头像">
         <template slot-scope="scope">
-         <el-tooltip class="item" effect="dark" :content="scope.row.SelfIntroduce" placement="right-end">
+          <img style="width:50px;height:50px" @click="imgBtn(scope.row.StaffInfo,BusinessLicenseImg)" :src="scope.row.StaffInfo.HeadUrl" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="StaffInfo.SelfIntroduce" label="自我介绍">
+        <template slot-scope="scope">
+         <el-tooltip class="item" effect="dark" :content="scope.row.StaffInfo.SelfIntroduce" placement="right-end">
             <p style="height:100%;overflow:hidden; 
         text-overflow:ellipsis;
         display:-webkit-box; 
         -webkit-box-orient:vertical;
-        -webkit-line-clamp:3; line-height: 16px;"> {{ scope.row.SelfIntroduce }}</p>
+        -webkit-line-clamp:3; line-height: 16px;"> {{ scope.row.StaffInfo.SelfIntroduce }}</p>
         </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column prop="CreateTime" label="创建时间">
+      <el-table-column prop="StaffInfo.CreateTime" label="创建时间">
         <template slot-scope="scope">
-          <span> {{ dateFormat( scope.row.CreateTime) }}</span>
+          <span> {{ dateFormat( scope.row.StaffInfo.CreateTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="140">
