@@ -305,10 +305,7 @@ export default {
     },
     computed: {
         tableList() {
-            return this.tableData.slice(
-                (this.currentPage - 1) * this.pageSize,
-                this.currentPage * this.pageSize
-            );
+            return this.tableData;
         }
     },
     /**
@@ -518,19 +515,26 @@ export default {
                     .then(res => {
                         if (res.data.Obj > 0) {
                             this.totalItems = res.data.Obj;
+                            var row = '';
+                            if(this.pageSize * this.currentPage >  this.totalItems && this.totalItems % this.pageSize > 0){
+                              row = this.totalItems % this.pageSize
+                            }else{
+                              row = this.pageSize;
+                            }
                             this.$http
                                 .post(
                                     `/api/v1/staff/${
                                         this.accountId
                                     }/allstaffinfos?page=${
                                         this.currentPage
-                                    }&row=${this.pageSize}&phone=${
+                                    }&row=${row}&phone=${
                                         this.searchForm.phone
                                     }&name=${this.searchForm.name}`
                                 )
                                 .then(res => {
                                     console.log(res);
-                                    this.tableData = res.data.Obj || [];
+                                    this.tableData = res.data.Obj;
+                                    console.log(this.tableData)
                                 });
                         }
                     });
