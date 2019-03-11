@@ -91,7 +91,7 @@
         <div class="from">
           <el-form :model="addForm" label-width="120px" ref="addForm">
             <el-form-item label="所属机构" prop="CompanyId">
-              <el-select v-model="addForm.CompanyId" style="width:100%"  placeholder="请选择">
+              <el-select v-model="addForm.CompanyId" style="width:100%" placeholder="请选择">
                 <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -169,7 +169,7 @@
         <div class="from">
           <el-form :model="editForm" label-width="120px" ref="editForm">
             <el-form-item label="所属机构" prop="CompanyId">
-              <el-select v-model="editForm.CompanyId" style="width:100%"  placeholder="请选择">
+              <el-select v-model="editForm.CompanyId" style="width:100%" placeholder="请选择">
                 <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -249,7 +249,7 @@ export default {
             tableData: [],
             totalItems: 0, //列表条数
             currentPage: 1, //初始页
-            pageSize: 10, //页数大小
+            pageSize: 5, //页数大小
             //列表查询条件
             searchForm: {
                 name: "",
@@ -356,6 +356,7 @@ export default {
          */
         handleSizeChange(val) {
             this.pageSize = val;
+            this.getListData();
         },
         /**
          * handleCurrentChange 列表页数进行改变
@@ -363,6 +364,7 @@ export default {
          */
         handleCurrentChange(val) {
             this.currentPage = val;
+            this.getListData();
         },
         /**
          * dateFormat 时间格式化
@@ -511,21 +513,26 @@ export default {
                 const accountId = JSON.parse(role).AccountId;
                 this.accountId = accountId;
                 const excludeAccountIds = [];
-
-                this.$http
-                    .post(
-                        `/api/v1/staff/${this.accountId}/allstaffinfos?page=
-                    ${this.currentPage}&row=${this.pageSize}&phone=${this.searchForm.phone}`
-                    )
-                    .then(res => {
-                        console.log(res);
-                        this.tableData = res.data.Obj || [];
-                        this.currentPage = 1;
-                    });
                 this.$http
                     .post(`/api/v1/staff/${this.accountId}/allstaff/cnt`)
                     .then(res => {
-                        this.totalItems = res.data.Obj;
+                        if (res.data.Obj > 0) {
+                            this.totalItems = res.data.Obj;
+                            this.$http
+                                .post(
+                                    `/api/v1/staff/${
+                                        this.accountId
+                                    }/allstaffinfos?page=${
+                                        this.currentPage
+                                    }&row=${this.pageSize}&phone=${
+                                        this.searchForm.phone
+                                    }&name=${this.searchForm.name}`
+                                )
+                                .then(res => {
+                                    console.log(res);
+                                    this.tableData = res.data.Obj || [];
+                                });
+                        }
                     });
             }
         },
