@@ -7,11 +7,6 @@
             <el-input v-model="searchForm.stationName" placeholder="请输入名称" style="width:220px;font-size:12px;"></el-input>
             <el-input v-model="searchForm.phone" placeholder="请输入手机号" style="width:220px;font-size:12px;"></el-input>
           </el-form-item>
-          <!-- <el-form-item label="状态" prop="date">
-                        <el-select v-model="searchForm.state" placeholder="全部类型" style="width:130px;">
-                            <el-option style="height:45px;" v-for="item in stateSelectOpption" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
-                    </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="srarch">查询</el-button>
           </el-form-item>
@@ -34,12 +29,12 @@
         </template>
       </el-table-column>
       <el-table-column prop="CompanyId" label="所属驿站">
-       <template slot-scope="scope">
+        <template slot-scope="scope">
           <span> {{ scope.row.BelongInfo[0].split(',')[3] }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="StaffInfo.Name" label="姓名">
-        
+
       </el-table-column>
       <el-table-column prop="StaffInfo.Sex" label="性别">
         <template slot-scope="scope">
@@ -65,13 +60,13 @@
       </el-table-column>
       <el-table-column prop="StaffInfo.SelfIntroduce" label="自我介绍">
         <template slot-scope="scope">
-         <el-tooltip class="item" effect="dark" :content="scope.row.StaffInfo.SelfIntroduce" placement="right-end">
+          <el-tooltip class="item" effect="dark" :content="scope.row.StaffInfo.SelfIntroduce" placement="right-end">
             <p style="height:100%;overflow:hidden; 
         text-overflow:ellipsis;
         display:-webkit-box; 
         -webkit-box-orient:vertical;
         -webkit-line-clamp:3; line-height: 16px;"> {{ scope.row.StaffInfo.SelfIntroduce }}</p>
-        </el-tooltip>
+          </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column prop="StaffInfo.CreateTime" label="创建时间">
@@ -95,7 +90,7 @@
       <div class="dialog-body">
         <div class="from">
           <el-form :model="addForm" label-width="120px" ref="addForm">
-            <el-form-item label="所属机构" prop="CompanyId" :rules="[{ required: true, message: '请选择所属机构'}]">
+            <el-form-item label="所属机构" prop="CompanyId">
               <el-select v-model="addForm.CompanyId" style="width:100%" @change="companyChange" placeholder="请选择">
                 <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
@@ -104,7 +99,7 @@
 
             <el-form-item label="所属驿站" prop="StationId">
               <el-select v-model="addForm.StationId	" style="width:100%" placeholder="请选择">
-                <el-option v-for="item in postOpption" :key="item.value" :label="item.label" :value="item.value">
+                <el-option v-for="item in stationOpption" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -168,6 +163,78 @@
       </div>
     </el-dialog>
 
+    <!--修改界面-->
+    <el-dialog title="修改" v-if="editFormVisible" :visible.sync="editFormVisible" width="50%" :before-close="editFormClose">
+      <div class="dialog-body">
+        <div class="from">
+          <el-form :model="editForm" label-width="120px" ref="editForm">
+            <el-form-item label="所属机构" prop="CompanyId">
+              <el-select v-model="editForm.CompanyId" style="width:100%" @change="companyChange" placeholder="请选择">
+                <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="所属驿站" prop="StationId">
+              <el-select v-model="editForm.StationId	" style="width:100%" placeholder="请选择">
+                <el-option v-for="item in stationOpption"  :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="姓名" prop="Name" :rules="[{ required: true, message: '姓名不能为空'}]">
+              <el-input v-model="editForm.Name" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="性别" prop="Sex">
+              <el-radio-group v-model="editForm.Sex">
+                <el-radio :label="0">男</el-radio>
+                <el-radio :label="1">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="身份证号" prop="CardId" :rules="[{ required: true, message: '身份证号不能为空'}]">
+              <el-input v-model="editForm.CardId" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="出生日期" :rules="[{ required: true, message: '请选择出生日期'}]">
+              <el-date-picker v-model="editForm.Birthday" type="date" placeholder="出生日期" style="width:100%">
+              </el-date-picker>
+            </el-form-item>
+
+            <el-form-item label="联系电话" prop="Phone" :rules="[{ required: true, message: '联系电话不能为空'}]">
+              <el-input v-model="editForm.Phone" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="联系地址" prop="Addr" :rules="[{ required: true, message: '联系地址不能为空'}]">
+              <el-input v-model="editForm.Addr" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="状态" prop="State">
+              <el-radio-group v-model="editForm.State">
+                <el-radio :label="0">启用</el-radio>
+                <el-radio :label="1">禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="自我介绍" prop="SelfIntroduce" :rules="[{ required: true, message: '自我介绍不能为空'}]">
+              <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="editForm.SelfIntroduce" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="logo">
+          <div class="show-img" v-if="editForm.HeadUrl">
+            <img :src="editForm.HeadUrl" class="avatar">
+            <i class="el-icon-error uploader-delete" @click="delectImg"></i>
+          </div>
+          <el-upload v-else class="avatar-uploader" :http-request="editUploadFile" action="http://210.76.124.110:86/api/v1/file/push" :show-file-list="false">
+            <i class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click.native="editFormClose">取消</el-button>
+          <el-button type="primary" @click.native="editSubmit('editForm')">提交</el-button>
+        </div>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -210,10 +277,27 @@ export default {
                 AccountName: "",
                 Passwd: ""
             },
+            //修改
+            editFormVisible: false,
+            editForm: {
+                CompanyId: "", //(integer, optional): 所属机构id
+                StationId: "",
+                Name: "", // (string, optional): 名称 ,
+                Sex: "", // (integer, optional): 性别,
+                Birthday: "", //(string, optional): 生日 ,
+                Weight: "", // (integer, optional): 体重g ,
+                Height: "", // (integer, optional): 身高cm ,
+                CardId: "", // (string, optional): 身份证号 ,
+                Addr: "", //(string, optional): 地址 ,
+                State: "", // (integer, optional): 状态,
+                Phone: "", // (string, optional): 联系电话 ,
+                HeadUrl: "", //(string, optional): 头像 ,
+                SelfIntroduce: "" // (string, optional): 自我介绍,
+            },
             //机构列表
             companyOpption: [],
             //驿站列表
-            postOpption: [],
+            stationOpption: [],
             //用户id
             accountId: ""
         };
@@ -252,6 +336,17 @@ export default {
                             label: item.Name
                         });
                     });
+                });
+            this.$http
+                .get(`/api/v1/user/${this.accountId}/station`)
+                .then(res => {
+                    res.data.Obj.map(item => {
+                        this.stationOpption.push({
+                            value: item.Id+ '',
+                            label: item.Name
+                        });
+                    });
+                    console.log(this.stationOpption)
                 });
         },
         /**
@@ -364,14 +459,20 @@ export default {
             this.addFormVisible = false;
             this.addForm = {
                 CompanyId: "", //(integer, optional): 所属机构id
-                Name: "", //(string, optional): 名称
-                DescDetail: "", // (string, optional): 机构详情
-                Address: "", //(string, optional): 地址
-                State: "", //(integer, optional): 状态，字典获取
-                Expired: "", //(string, optional): 到期时间
-                ResponsiblePersonName: "", //(string, optional): 负责人姓名
-                ResponsiblePersonSex: 0, //(integer, optional): 负责人性别，字典接口获取
-                ResponsiblePersonPhone: "" //(string, optional): 负责人联系
+                StationId: "",
+                Name: "", // (string, optional): 名称 ,
+                Sex: 0, // (integer, optional): 性别,
+                Birthday: "", //(string, optional): 生日 ,
+                Weight: "", // (integer, optional): 体重g ,
+                Height: "", // (integer, optional): 身高cm ,
+                CardId: "", // (string, optional): 身份证号 ,
+                Addr: "", //(string, optional): 地址 ,
+                State: 0, // (integer, optional): 状态,
+                Phone: "", // (string, optional): 联系电话 ,
+                HeadUrl: "", //(string, optional): 头像 ,
+                SelfIntroduce: "", // (string, optional): 自我介绍,
+                AccountName: "",
+                Passwd: ""
             };
         },
         /**
@@ -459,28 +560,60 @@ export default {
          * @param row  列表的一条数据
          */
         deleteData: function(index, row) {
+            console.log(row);
             this.$confirm("确认删除该记录吗？", "提示", {
                 type: "warning"
             }).then(() => {
                 console.log(row);
-                if (row.StationId) {
+                console.log(row.BelongInfo[0].split(",")[2]);
+                const stationId = row.BelongInfo[0].split(",")[2];
+                const companyId = row.BelongInfo[0].split(",")[0];
+                const AccountId = row.StaffInfo.AccountId;
+                if (stationId) {
+                    var _josn = {
+                        accountId: AccountId,
+                        stationId: stationId
+                    };
                     this.$http
-                        .delete("/api/v1/staffinfo?accountId=" + row.AccountId + "&stationId="+row.StationId, row)
+                        .delete(
+                            "/api/v1/stafftostation?accountId=" +
+                                AccountId +
+                                "&stationId=" +
+                                stationId,
+                            _josn
+                        )
                         .then(res => {
-                           
+                            this.$http
+                                .delete(
+                                    "/api/v1/staffinfo?id=" + row.StaffInfo.Id
+                                )
+                                .then(res => {
+                                    this.getListData();
+                                });
                         });
                 } else {
-                  this.$http
-                        .delete("/api/v1/staffinfo?accountId=" + row.AccountId + "&companyId="+row.StationId, row)
+                    var _josn = {
+                        accountId: AccountId,
+                        companyId: companyId
+                    };
+                    this.$http
+                        .delete(
+                            "/api/v1/stafftocompany?accountId=" +
+                                AccountId +
+                                "&companyId=" +
+                                companyId,
+                            _josn
+                        )
                         .then(res => {
-                            
+                            this.$http
+                                .delete(
+                                    "/api/v1/staffinfo?id=" + row.StaffInfo.Id
+                                )
+                                .then(res => {
+                                    this.getListData();
+                                });
                         });
                 }
-                this.$http
-                    .delete("/api/v1/staffinfo?id=" + row.Id, row)
-                    .then(res => {
-                        this.getListData();
-                    });
             });
         },
         /**
@@ -488,7 +621,23 @@ export default {
          * @param index s 列表的index
          * @param row  列表的一条数据
          */
-        EditData(index, row) {},
+        EditData(index, row) {
+            if (row.StaffInfo) {
+                const stationId = row.BelongInfo[0].split(",")[2];
+                const companyId = row.BelongInfo[0].split(",")[0];
+                if (companyId == -1) {
+                    this.editForm.StationId = stationId;
+                } else {
+                    this.editForm.StationId = stationId;
+                    this.editForm.CompanyId = companyId;
+                }
+
+                this.editForm = Object.assign(this.editForm, row.StaffInfo);
+                // this.editForm = Object.assign(this.editForm, _josn);
+                this.editFormVisible = true;
+                console.log(this.editForm);
+            }
+        },
         /**
          * companyChange 机构改变时调用
          * @param val 选择的值
@@ -503,15 +652,72 @@ export default {
                     });
                 });
             });
-        }
+        },
+        /**
+         * editFormClose 关闭修改弹出层
+         */
+        editFormClose() {
+            this.editFormVisible = false;
+            this.editForm = {
+                CompanyId: "", //(integer, optional): 所属机构id
+                StationId: "",
+                Name: "", // (string, optional): 名称 ,
+                Sex: "", // (integer, optional): 性别,
+                Birthday: "", //(string, optional): 生日 ,
+                Weight: "", // (integer, optional): 体重g ,
+                Height: "", // (integer, optional): 身高cm ,
+                CardId: "", // (string, optional): 身份证号 ,
+                Addr: "", //(string, optional): 地址 ,
+                State: "", // (integer, optional): 状态,
+                Phone: "", // (string, optional): 联系电话 ,
+                HeadUrl: "", //(string, optional): 头像 ,
+                SelfIntroduce: "" // (string, optional): 自我介绍,
+            };
+        },
+        editSubmit(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    this.$http
+                        .put(`/api/v1/staffinfo`, this.editForm)
+                        .then(res => {
+                            this.editFormClose();
+                            this.getListData();
+                        });
+                } else {
+                    console.log("error submit!!");
+                    return false;
+                }
+            });
+        },
+        /**
+         * delectImg 修改头像
+         */
+        delectImg (){
+          this.editForm.HeadUrl = '';
+        },
+        /**
+         * editUploadFile 新增上传文件
+         * @param params 改变的数量
+         */
+        editUploadFile(params) {
+            const _file = params.file;
+            var formData = new FormData();
+            let fileName = _file.name.split(',');
+            formData.append("file", _file);
+            formData.append("accountId", this.accountId);
+            formData.append("extension", fileName[fileName.length - 1]);
+            return this.$http.post(`/api/v1/file/push`,formData)
+            .then(res=>{
+              this.editForm.HeadUrl = res.data.Obj[0]
+            })
+        },
     }
 };
 </script>
 <style lang="scss">
-
-    .el-table .cell {
-      height: 50px;
-    }
+.el-table .cell {
+    height: 50px;
+}
 </style>
 
 <style lang="scss" scoped>
