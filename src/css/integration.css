@@ -1,0 +1,159 @@
+._Health_management{
+  display: flex;
+  flex-wrap: wrap;
+  background: #F6F6F6;
+  padding-bottom: 10px;
+}
+.ation_box{
+  width: 95%;
+  margin-left: 2.5%;
+  background: #fff;
+  margin-top: 15px;
+}
+.ation_box ul li{
+  display: flex;
+  padding: 15px 0 0 20px;
+}
+.ation_box ul li img{
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+.ation_box ul li .ation_top{
+  padding: 5px 0 0 10px;
+}
+.ation_box ul li .ation_top p{
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  letter-spacing: 0.62px;
+  padding-bottom: 5px;
+}
+.ation_box ul li .ation_top p em{
+  font-style: normal;
+  color: #999999;
+  padding-left: 15px;
+}
+.ation_box ul li .ation_top b{
+  font-weight: 300;
+}
+.ation_ban{
+  margin: 10px 20px;
+  width: 95%;
+  height: 68px;
+  border: 1px solid #e8e8e8;
+}
+.ation_ban dl{
+  display: flex;
+  width: 100%;
+}
+.ation_ban dl dt{
+  width: 8%;
+  height: 68px; 
+  background: #F4F4F4;
+}
+.ation_ban dl dt img{
+  width: 36px;
+  height: 34px;
+  margin-top: 50%;
+  margin-left: 50%;
+  transform: translate(-50%,-50%);
+}
+.ation_ban dl dd{
+ width: 92%;
+}
+.ation_ban dl dd p{
+  padding: 10px;
+}
+/* ._Health_management dl{
+  width: 95%;
+  margin-top: 15px;
+  background: #fff;
+  margin-left: 2.5%;
+  display: flex;
+  flex-direction: column;
+  position: relative; */
+  /* width: 45%;
+  display: flex;
+  border: 1px solid #eee;
+  margin: 20px 1.5% 0 1%;
+  padding: 10px 0;
+  border-radius: 4px; */
+/* }
+._Health_management dl dt{
+  padding: 20px 0 0 30px;
+  display: flex;
+  width: 48px;
+  height: 48px;
+}
+._Health_management dl dt img{
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+._Health_management dl dd span{
+  line-height: 2.5;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: #333333;
+  letter-spacing: 0.62px;
+  position: absolute;
+  top: 20px;
+  left: 10.5%;
+  transform: translate(0,-10.5%);
+}
+._Health_management dl dd em{
+  line-height: 2.7;
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #999999;
+  letter-spacing: 0.62px;
+  font-style: normal;
+  position: absolute;
+  top: 20px;
+  left: 17%;
+  transform: translate(0,-17%);
+}
+._Health_management dl dd b{
+  position: absolute;
+  top: 49px;
+  left: 10.5%;
+  transform: translate(0,-10.5%);
+  line-height: 1.5;
+  font-weight: normal;
+}
+._Health_management dl dd img{
+  width: 58px;
+  height: 44px; */
+  /* margin-top: 50%;
+  margin-left: 50%;
+  transform: translate(-50%,-50%); */
+/* }
+._Health_management dl dd i{
+  font-family: PingFangSC-Regular;
+  font-size:12px;
+  color: #333333;
+  padding: 20px 17px;
+  font-weight: normal;
+  font-style: normal;
+}
+._Health_management:last-child{
+  padding-bottom: 30px; 
+}*/
+/* ._Health_management dl dd{
+  width: 80%;
+  padding: 0 10px;
+}
+._Health_management dl dd p{
+  line-height: 30px;
+}
+._Health_management dl dd p:nth-child(1){
+  display: flex;
+  justify-content: space-between;
+}
+._Health_management dl dd p:nth-child(1) span:nth-child(1),._Health_management dl dd p:nth-child(1) span:nth-child(2){
+  border: 1px solid #999;
+  padding: 3px 5px;
+  border-radius: 4px;
+  margin:10px 0;
+} */

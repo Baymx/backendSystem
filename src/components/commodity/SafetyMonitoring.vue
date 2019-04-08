@@ -1,119 +1,243 @@
 <template>
-  <div class="_Safety_Monitoring">
-    <div class="amap-page-container">
-    <div :style="{width:'100%',height:'300px'}">
-      <el-amap vid="amap" :plugin="plugin" class="amap-demo" :center="center">
-      </el-amap>
+  <div class="safety_box">
+    <div class="safety_top">
+      <div class="safety_button">
+        <button @click="addFormVisible = true">
+          <img src="../../../static/img/xinjian1.png" alt="">新建
+        </button>
+      </div>
+      <div class="safety_table">
+        <el-table :data="tableData" border style="width: 100%">
+         <el-table-column prop="name" label="名称" width="170"></el-table-column>
+          <el-table-column prop="date" label="时间" width="170"></el-table-column>
+          <el-table-column prop="file" label="文件大少" width="170"></el-table-column>
+          <el-table-column prop="type" label="类型" width="170"></el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button size="small" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" type="text">编辑</el-button>
+              <el-button type="text" size="small" icon="el-icon-delete" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 新建 -->
+        <el-dialog title="新建健康资料" v-if="addFormVisible" :visible.sync="addFormVisible" width="400px" :before-close="handleClose">
+          <el-form :model="addForm" label-width="100px" ref="addForm">
+            <el-form-item label="资料名称:">
+              <el-input autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="医院名称:">
+              <el-input autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="上传文件:">
+              <!-- <div class="show-img" v-if="addForm.BusinessLicenseImg">
+                <img  :src="addForm.BusinessLicenseImg" class="avatar">
+                <i class="el-icon-error uploader-delete" @click="delectBusinessLicenseImg"></i>
+              </div> -->
+              <el-upload
+                class="avatar-uploader"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" size="mini">提交</el-button>
+            <el-button size="mini" @click.native="handleClose">关闭</el-button>
+          </div>
+        </el-dialog>
+        <!-- 编辑 -->
+        <el-dialog title="编辑健康资料" v-if="editFormVisible" :visible.sync="editFormVisible" width="400px" :before-close="editClose">
+          <el-form :model="editForm" label-width="100px" ref="editForm">
+            <el-form-item label="资料名称:">
+              <el-input autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="医院名称:">
+              <el-input autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="上传文件:">
+              <!-- <div class="show-img" v-if="addForm.BusinessLicenseImg">
+                <img  :src="addForm.BusinessLicenseImg" class="avatar">
+                <i class="el-icon-error uploader-delete" @click="delectBusinessLicenseImg"></i>
+              </div> -->
+              <el-upload
+                class="avatar-uploader"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click.native="editSubmit('editForm')">提交</el-button>
+            <el-button @click.native="editClose">取消</el-button>
+          </div>
+        </el-dialog>
+      </div>
     </div>
-    <div class="toolbar">
-        <span v-if="loaded">
-          经度 = {{ lng }} 纬度 = {{ lat }}
-        </span>
-      <span v-else>正在定位</span>
-    </div>
-    <!-- <div
-      @click="req_post"
-    >
-      查询周边
-    </div> -->
-    <p class="_Historical_record">历史记录</p>
-    <el-table style="100%">
-      <el-table-column prop="id" label="地址"></el-table-column>
-      <el-table-column prop="order" label="经度"></el-table-column>
-      <el-table-column prop="payment" label="纬度"></el-table-column>
-      <el-table-column prop="payment" label="时间"></el-table-column>
-      <el-table-column prop="payment" label="查看"></el-table-column>
-    </el-table>
-  </div>
   </div>
 </template>
 <script>
-export default {
-  data(){
-    const self = this;
-    return {
-      center: [121.59996, 31.197646],
-      lng: 0,
-      lat: 0,
-      loaded: false,
-      plugin: [{
-        enableHighAccuracy: true,//是否使用高精度定位，默认:true
-        timeout: 100,          //超过10秒后停止定位，默认：无穷大
-        maximumAge: 0,           //定位结果缓存0毫秒，默认：0
-        convert: true,           //自动偏移坐标，偏移后的坐标为高德坐标，默认：true
-        showButton: true,        //显示定位按钮，默认：true
-        buttonPosition: 'RB',    //定位按钮停靠位置，默认：'LB'，左下角
-        showMarker: true,        //定位成功后在定位到的位置显示点标记，默认：true
-        showCircle: true,        //定位成功后用圆圈表示定位精度范围，默认：true
-        panToLocation: true,     //定位成功后将定位到的位置作为地图中心点，默认：true
-        zoomToAccuracy:true,//定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：f
-        extensions:'all',
-        pName: 'Geolocation',
-        events: {
-          init(o) {
-            // o 是高德地图定位插件实例
-            o.getCurrentPosition((status, result) => {
-              console.log(result)
-              if (result && result.position) {
-                self.lng = result.position.lng;
-                self.lat = result.position.lat;
-                self.center = [self.lng, self.lat];
-                self.loaded = true;
-                self.$nextTick();
-              }
-            });
-          }
-        }
-      }]
+  export default {
+    data() {
+      return {
+        tableData: [{
+          date: '2016-05-02 12:33',
+          name: '王小虎',
+          file: '123kb',
+          type:'jpg'
+        }, {
+          date: '2016-05-04 12:33',
+          name: '王小虎',
+          file: '123kb',
+          type:'jpg'
+        }, {
+          date: '2016-05-01 12:33',
+          name: '王小虎',
+          file: '123kb',
+          type:'jpg'
+        }, {
+          date: '2016-05-03 12:33',
+          name: '王小虎',
+          file: '123kb',
+          type:'jpg'
+        }],
+        //新建
+        addFormVisible:false,
+        //编辑
+        editFormVisible:false
+      }
+    },
+    methods:{
+      //编辑
+      handleEdit(){
+        this.editFormVisible = true
+      },
+      editClose(){
+        this.editFormVisible = false
+      },
+      handleDel:function(){
+        this.$confirm('确认删除该健康资料吗？','删除',{
+          type:'warning'
+        })
+      },
+      //新建
+      handleClose(){
+         this.addFormVisible = false;
+      }
     }
-  },
-  methods : {
-     req_post() {
-      const that=this;
-      const registerUrl="http://restapi.amap.com/v3/batch?key=85d4e60dcbacd1f0da5e7ae79e241110";
-      const newUserInfo={
-        "ops": [
-          {
-            "url": "/v3/place/around?offset=10&page=1&key=85d4e60dcbacd1f0da5e7ae79e241110&location="+that.lng+","+that.lat+"&output=json&radius=100000&types=080000"
-          }
-        ]
-      };
-      // that.axios.post(registerUrl, newUserInfo, {
-      //   headers: {
-      //     'Content-Type': 'application/x-www-form-urlencoded'
-      //   }
-      // })
-      // .then(function (response) {
-      //   console.log(response['data'][0]['body']['pois'])
-      // })
-      // .catch(function (error) {
-      //   console.log(error);
-      // });
-    }
+  }
+</script>
+<style lang="scss">
+/*上传组件样式*/
+.avatar-uploader {
+  .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  i{
+    color: #128DDA;
   }
 }
-</script>
-<style scoped lang="">
-  .amap-logo,.amap-copyright{
-    display: none!important;
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+.show-img{
+  position: relative;
+  width: 178px;
+  .avatar{
+    display: block;
+      width: 178px;
+      height: 178px;
   }
-  ._Historical_record{
-    width: 80px;
-    text-align: center;
-    line-height: 40px;
-    border: 1px solid #ccc;
-    margin-left: 20px;
+  .uploader-delete{
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 20px;
   }
-  /* ._Safety_Monitoring .el-table tr{
-    background-color: rgb(46, 167, 46);
-  }
-  ._Safety_Monitoring .has-gutter{
-    background-color: rgb(46, 167, 46);
-  }
-  ._Safety_Monitoring .el-table__header{
-    background-color: rgb(46, 167, 46);
-  }
-  ._Safety_Monitoring .el-table__header-wrapper{
-    background-color: rgb(46, 167, 46);
-  } */
+}
+</style>
+<style scoped>
+.safety_box{
+  display: flex;
+  flex-direction: column;
+  background: #F6F6F6;
+  padding-bottom: 10px;
+}
+.safety_top{
+  width: 95%;
+  margin-left: 2.5%;
+  margin-top: 11px;
+}
+.safety_button{
+  float: left;
+  margin-bottom: 10px;
+}
+.safety_button button{
+  background: #409EFF;
+  border: 1px solid #E6E6E6;
+  border-radius: 4px;
+  border: 0;
+  outline: 0;
+  padding:5px 10px;
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #FFFFFF;
+  letter-spacing: 0.46px;
+}
+button img{
+  width: 12px;
+  height: 10px;
+  
+}
+.el-button{
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  /* color: #DD2F15; */
+  letter-spacing: 0.46px;
+  color: #3685D7
+}
+.el-button:nth-child(2){
+  color: #DD2F15;
+}
+.dialog-footer{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+.dialog-footer .el-button{
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+}
+.dialog-footer .el-button:nth-child(2){
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: #333333;
+  letter-spacing: 0;
+}
 </style>

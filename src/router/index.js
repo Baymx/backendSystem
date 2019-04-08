@@ -11,7 +11,7 @@ import nursing from '../components/nursing/nursing.vue'
 import member from '../components/system/member.vue'
 import order from '../components/order/order.vue'
 import recruitment from '../components/recruitment/recruitment.vue'
-// import evaluate from '../components/evaluate/evaluate.vue'
+import evaluate from '../components/evaluate/evaluate.vue'
 import content from '../components/system/content.vue'
 import authority from '../components/system/authority.vue'
 import my from '../components/my/my.vue'
@@ -27,6 +27,7 @@ import newly from '../components/newly.vue'
 import commodityNewlyAdded from '../components/commodity/commodityNewlyAdded.vue'
 import deviceManagement from '../components/commodity/deviceManagement.vue'
 import MedicalRecords from '../components/commodity/MedicalRecords.vue'
+import commodityn from '../components/commodity/commodityn.vue'
 import ConsultationManagement from '../components/commodity/ConsultationManagement.vue'
 import SafetyMonitoring from '../components/commodity/SafetyMonitoring.vue'
 import HealthAgreement from '../components/commodity/HealthAgreement.vue'
@@ -34,12 +35,15 @@ import ServiceOrder from '../components/Service/ServiceOrder.vue'
 import ServicePublishing from '../components/Service/ServicePublishing.vue'
 import ServiceEvaluation from '../components/Service/ServiceEvaluation.vue'
 import ServiceProcess from '../components/Service/ServiceProcess.vue'
-import HealthService from '../components/Service/HealthService.vue'
+import demo from '../components/demo/demo.vue'
+// import HealthService from '../components/Service/HealthService.vue'
 import RemoteMonitoring from '../components/RemoteMonitoring/RemoteMonitoring.vue'
 import HealthSurveillance from '../components/RemoteMonitoring/HealthSurveillance.vue'
 import SafetyMonitoringRemote from '../components/RemoteMonitoring/SafetyMonitoring.vue'
 import SleepMonitoring from '../components/RemoteMonitoring/SleepMonitoring.vue'
 import PostManagement from '../components/PostManagement/PostManagement.vue'
+import Constant from '../components/constant/constant.vue'
+import Create from '../components/Create/Create.vue'
 
 Vue.use(Router)
 
@@ -83,7 +87,7 @@ export default new Router({
             children: [{
                 path: '/commodityNewlyAdded',
                 component: commodityNewlyAdded,
-                name: '添加会员',
+                name: '用户管理',
             }]
         },
         {
@@ -116,9 +120,31 @@ export default new Router({
             name: '人员管理',
             iconCls: 'icon iconfont icon-guanjiaguanli',
             children: [{
-                path: '/nursing',
-                component: nursing,
-                name: '会员管理'
+                path: '/commodity/integration',
+                component: commodity,
+                name: '用户管理',
+                children : [{
+                    path : '/commodity/integration',
+                    component: integration,
+                },{
+                    path : '/commodity/ConsultationManagement',
+                    component: ConsultationManagement,
+                },{
+                    path : '/commodity/HealthAgreement',
+                    component: HealthAgreement,
+                },{
+                    path : '/commodity/MedicalRecords',
+                    component: MedicalRecords,
+                },{
+                    path : '/commodity/deviceManagement',
+                    component: deviceManagement,
+                },{
+                    path : '/commodity/SafetyMonitoring',
+                    component: SafetyMonitoring,
+                },,{
+                    path : '/commodity/commodityn',
+                    component: commodityn,
+                }]
             }, {
                 path: '/integral',
                 component: integral,
@@ -135,17 +161,17 @@ export default new Router({
                 component: ServiceOrder,
                 name: '服务订单'
             }, {
-                path: '/ServicePublishing/HealthService',
+                path: '/ServicePublishing',
                 component: ServicePublishing,
-                name: '服务产品',
-                children: [{
-                    path: '/ServicePublishing/HealthService',
-                    component: HealthService,
-                }]
+                name: '服务产品'
             }, {
                 path: '/Management',
                 component: Management,
                 name: '服务类型'
+            },{
+                path:'/Create',
+                component: Create,
+                name: '服务单位'
             }, {
                 path: '/RemoteMonitoring',
                 component: RemoteMonitoring,
@@ -232,8 +258,8 @@ export default new Router({
                 component: member,
                 name: '健康监护'
             }, {
-                path: '/MedicalRecords',
-                component: MedicalRecords,
+                path: '/nursing',
+                component: nursing,
                 name: '安全监护'
             }, {
                 path: '/HealthAgreement',
@@ -254,6 +280,10 @@ export default new Router({
                 path: '/authority',
                 component: authority,
                 name: '权限管理'
+            },{
+                path: '/constant',
+                component: Constant,
+                name: '常量管理'
             }, {
                 path: '/content',
                 component: content,
@@ -263,12 +293,23 @@ export default new Router({
                 component: ServiceEvaluation,
                 name: '微信管理'
             }, {
-                path: '/deviceManagement',
-                component: deviceManagement,
+                path: '/evaluate',
+                component: evaluate,
                 name: '支付管理'
             }]
 
         }, {
+            path: '/',
+            component: home,
+            name: '',
+            iconCls: 'icon iconfont icon-jiaoliuguanli',
+            leaf: true,
+            children: [{
+                path: '/Demo',
+                component: demo,
+                name: 'Demo例子'
+            }]
+        },{
             path: '*',
             redirect: '/404',
             hidden: true

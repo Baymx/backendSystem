@@ -1,200 +1,347 @@
 <template>
-  <div class="_Communication_Administration">
-    <el-col :span="24" class="_toolbar_header" style="padding-bottom: 0px;display: flex;justify-content: space-between;padding:5px 0;border:1px solid #eee;margin-top:20px;">
-      <el-form :inline="true" :model="filters" style="padding-top:10px;margin-left:10px;">
-        <el-form-item>
-          <el-input v-model="tableDataName" placeholder="请输入内容查询关键字"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="date">
-          <el-cascader
-            :options="options"
-            v-model="selectedOptions"
-            placeholder="全部状态"
-            @change="handleChange">
-          </el-cascader>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="detailsClick">查询</el-button>
-        </el-form-item>
+  <div class="bar">
+    <el-row class="toolbar" style="padding-bottom: 0px;">
+      <el-form :inline="true" class="bar_form">
+        <div class="bar_form_left">
+          <el-form-item>
+            <el-input v-model="gridOps.searchFields.filter" placeholder="请输入内容查询" clearable=""></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary"  @click="loadSearch">查询</el-button>
+          </el-form-item>
+        </div>
+        <!--<div class="bar_form_right">
+          <el-form-item style="float:right">
+            <el-button-group>
+              <el-button type="primary" icon="el-icon-plus" @click="addRow">新增</el-button>
+            </el-button-group>
+          </el-form-item>
+        </div>-->
       </el-form>
-      <el-form style="padding-top:10px;">
-        <el-form-item>
-          <el-button type="primary" style="margin-right:20px">删除</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-    <el-table style="100%">
-      <el-table-column prop="id" label="序号"></el-table-column>
-      <el-table-column prop="order" label="发布人"></el-table-column>
-      <el-table-column prop="payment" label="内容"></el-table-column>
-      <el-table-column prop="money" label="转发量"></el-table-column>
-      <el-table-column prop="date" label="评论数"></el-table-column>
-      <el-table-column prop="status" label="点赞量"></el-table-column>
-      <el-table-column prop="date" label="发布时间"></el-table-column>
-      <el-table-column label="操作">
+    </el-row>
+    <el-table stripe="" :data="gridOps.data" v-loading="listLoading" tooltip-effect="dark" style="width: 100%" @selection-change="selsChange">
+      <el-table-column label="序号" type="index" align="center" show-overflow-tooltip="" width="50px">
+      </el-table-column>
+      <el-table-column v-for="(col,index) in gridOps.columns" :key="index" v-if="col.show!=='false'" :prop="col.dataIndex" :label="col.text"
+                       :formatter="col.renderer" :width="col.width"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteAdd(scope.$index, scope.row)"></el-button>
+          <el-button size="small" v-if="!scope.row.ProhiBit" icon="el-icon-Shield" @click="ShieldData(scope.$index, scope.row)">屏蔽</el-button>
+          <el-button type="danger" size="small" v-if="scope.row.ProhiBit" icon="el-icon-Online" @click="OnlineData(scope.$index, scope.row)">上线</el-button>
+          <el-button size="small" icon="el-icon-edit" @click="editData(scope.$index, scope.row)"></el-button>
+          <el-button type="danger" size="small" icon="el-icon-delete" @click="deleteData(scope.$index, scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 弹框内容 -->
-    <div class="_Communication_Administration_ElasticFrame" v-bind:class="{ '_Communication_Administration_ElasticFrame' : ElasticFrameTrue , '_Communication_Administration_ElasticFrame _Communication_Administration_ElasticFrame_Block' : ElasticFrameFalse}" @click="flagClick">
-      <div class="_Communication_Administration_ElasticFrame_content">
-        <dl class="_ElasticFrame_header_information">
-          <dt>
-            <p>
-              <img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/>
-            </p>
-          </dt>
-          <dd>
-            <p>张三</p>
-            <p>2019-1-8-15:45</p>
-            <p>被转量:100次 评论量:1000 点赞量:200</p>
-          </dd>
-        </dl>
-        <el-form>
-          <el-form-item>
-            <el-input type="textarea"></el-input>
-          </el-form-item>
-          <div class="_form_img">
-            <span>图片附件:</span>
-            <div class="_from_img_content">
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-              <p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=625823598,3620777947&fm=27&gp=0.jpg"/></p>
-            </div>
-          </div>
-          <div class="_form_comment">
-            <span>评论内容:</span>
-            <div class="_form_comment_content">
-              <p>李四:你好</p>
-              <p>李四:你好</p>
-              <p>李四:你好</p>
-              <p>李四:你好</p>
-              <p>李四:你好</p>
-            </div>
-          </div>
-        </el-form>
-      </div>
+    <!-- 分页 -->
+    <div class="block" style="margin-top: 1rem">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page="gridOps.currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="gridOps.pageSize"
+                     layout="total, sizes, prev, pager, next, jumper" :total="gridOps.total"
+                     style="float: right"></el-pagination>
     </div>
+
+    <el-dialog :title="title" :visible.sync="dialogVisible" :close-on-click-modal="false" label-width="40%">
+      <el-form :model="addForm" :label-position="labelPosition" label-width="80px" :rules="addFormRules" ref="addForm">
+        <el-row :gutter="20">
+          <el-form-item v-if="!editDisabled" label="所属机构" prop="CompanyId">
+            <el-select v-model="addForm.CompanyId" style="width:100%" placeholder="请选择" >
+              <el-option v-for="item in companyOpption" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="!editDisabled" label="所属驿站" prop="StationId">
+            <el-select v-model="addForm.StationId	" style="width:100%" placeholder="请选择" @change="companyChange">
+              <el-option v-for="item in stationOpption" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="名称" prop="Name">
+            <el-input v-model="addForm.Name" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="备注" prop="Descript">
+            <el-input v-model="addForm.Descript" auto-complete="off"></el-input>
+          </el-form-item>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-export default {
+  import { parseTime } from '@/utils/time'
+  export default {
   data(){
-    return {
-      filters:{
-        name:''
-      },
-      tableDataName:'',
-      options: [{
-        value : 'zhinan',
-        label : '指南'
-      },{
-        value : 'zujian',
-        label : '组件'
-      },{
-        value : 'ziyuan',
-        label : '资源'
-      }],
-      selectedOptions: [],
-      ElasticFrameTrue : true,
-      ElasticFrameFalse : false
-    }
+  return {
+  labelPosition: 'right',
+  listLoading: false,
+  gridOps: {
+  columns: [
+  {
+  text: '发布人',
+  width: 100,
+  dataIndex: 'UserName'
   },
-  methods : {
-    handleChange(value) {
-      console.log(value);
-    },
-    detailsClick(){
-      this.ElasticFrameFalse = true
-    },
-    flagClick(){
-      this.ElasticFrameFalse = false
-    }
+  {
+  text: '内容',
+  dataIndex: 'Content'
+  },
+  {
+  text: '点击量',
+  width: 80,
+  dataIndex: 'Laud'
   }
-}
+  ,
+  {
+  text: '评论量',
+  width: 80,
+  dataIndex: 'Comment'
+  },
+  {
+  text: '转发量',
+  width: 80,
+  dataIndex: 'Name'
+  },
+  {
+  text: '发布时间',
+  width: 200,
+  dataIndex: 'CreateTime',
+  renderer: function(row) {
+  return parseTime(row.CreateTime)
+  }
+  }],
+  data: [],
+  searchFields: { filter: '' }, // 搜索字段
+  // 分页
+  paging: true,
+  currentPage: 1,
+  pageSize: 10,
+  total: 0
+  },
+  sels: [], // 列表选中列
+  accountId: '',
+  companyOpption: [],  // 机构列表
+  stationOpption: [], //驿站列表
+  // 新增
+  dialogVisible: false,
+  title: '新增',
+  addForm: {
+  Id: '',
+  Name: '',
+  CompanyId: '',
+  StationId: '',
+  MerchantId: '',
+  CreateTime: '',
+  Descript: ''
+  },
+  addFormRules: {
+  Content: [
+  { required: true, message: '请输入姓名', trigger: 'blur' },
+  { min: 2, message: '姓名至少为两位数', trigger: 'blur' }
+  ],
+  CompanyId: [
+  { required: true, message: '请选择所属机构', trigger: 'blur' }
+  ],
+  StationId: [
+  { required: true, message: '请选择所属驿站', trigger: 'blur' }
+  ]
+  },
+  editDisabled: false
+  }
+  },
+  created() {
+  this.initData()
+  this.loadData()
+  },
+  methods: {
+  loadSearch: function() {
+  // 避免查询页数大于1， 有搜索条件查询不到
+  this.gridOps.currentPage = 1
+  this.loadData()
+  },
+  deleteData: function(index,row) {
+  var this_ = this
+  this.$confirm("确认删除该记录吗？","提示",{
+  type:"warning"
+  }).then(function() {
+  this_.$http.delete("/api/v1/circlefriends/del?id=" + row.PushInfoId, row)
+  .then(function(res) {
+  this_.loadData()
+  this_.$message.success('操作成功')
+  })
+  })
+  },
+  editData: function(index,row) {
+  var this_ = this
+  this.resetFrom()
+  this.title = '编辑'
+  this.editDisabled = true
+  this.dialogVisible = true
+  this.addForm = Object.assign({}, row)
+  },
+  addRow: function() {
+  var this_ = this
+  this.resetFrom()
+  this.title = '新增'
+  this.dialogVisible = true
+  },
+  resetFrom: function() {
+  this.editDisabled = false
+  this.addForm = {
+  Id: '',
+  Name: '',
+  CompanyId: '',
+  StationId: '',
+  MerchantId: '',
+  CreateTime: '',
+  Descript: ''
+  }
+  },
+  ShieldData:function(index, row) {
+  var this_ = this
+  this.title = '屏蔽'
+  this.$confirm("确认屏蔽此信息吗？", "提示", {
+  type: "warning"
+  }).then(function() {
+  this_.$http.delete("/api/v1/circlefriends/prohibit?id=" + row.PushInfoId)
+  .then(function(res) {
+  this_.$message.success('操作成功')
+  this_.loadData()
+  });
+  });
+  },
+  OnlineData:function(index, row) {
+  var this_ = this
+  this.title = '上线'
+  this.$confirm("确认上线吗？", "提示", {
+  type: "warning"
+  }).then(function() {
+  this_.$http.delete("/api/v1/circlefriends/prohibit/not?id=" + row.PushInfoId)
+  .then(function(res) {
+  this_.$message.success('操作成功')
+  this_.loadData()
+  });
+  });
+  },
+  companyChange: function(val) {
+  var this_ = this
+  this.$http.get('/api/v1/merchant/station?stationId=' + val)
+  .then(function(res) {
+  this_.addForm.MerchantId = res.data.Obj
+  })
+  },
+  addSubmit: function() {
+  var this_ = this
+  this.$refs.addForm.validate(function(valid) {
+  if (valid) {
+  var rowId = this_.addForm.Id
+  if (!rowId) {
+  this_.$http.post('/api/v1/merchantcustomcategory',this_.addForm)
+  .then(function(res) {
+  this_.dialogVisible = false
+  this_.$message.success('操作成功')
+  this_.loadData()
+  })
+  } else {
+  this_.$http.patch('/api/v1/merchantcustomcategory?id=' + this_.addForm.Id + '&name=' + this_.addForm.Name + '&descript=' + this_.addForm.Descript, this_.addForm)
+  .then(function(res) {
+  this_.dialogVisible = false
+  this_.$message.success('操作成功')
+  this_.loadData()
+  })
+  }
+  }
+  })
+  },
+  initData: function() {
+  var this_ = this
+  var role = sessionStorage.getItem('role')
+  if(role && role !== 'null') {
+  const accountId = JSON.parse(role).AccountId
+  this.accountId = accountId
+  }
+  this.$http.get('/api/v1/staff/' + this.accountId + '/company')
+  .then(function(res) {
+  res.data.Obj.map(function (item) {
+  this_.companyOpption.push({
+  value: item.Id,
+  label: item.Name
+  });
+  });
+  });
+  this.$http.get('/api/v1/user/' + this.accountId + '/station')
+  .then(function(res) {
+  res.data.Obj.map(function(item) {
+  this_.stationOpption.push({
+  value: item.Id,
+  label: item.Name
+  });
+  });
+  });
+  },
+  loadData: function() {
+  this.loadList()
+  this.loadCount()
+  },
+  loadList: function() {
+  var this_ = this
+  var params = {
+  'page': this.gridOps.currentPage,
+  'row': this.gridOps.pageSize,
+  'accountId': this.accountId
+  }
+  var filter = this.gridOps.searchFields.filter
+  if (filter) {
+  params['filter'] = filter
+  }
+  this.$http.get('/api/v1/circlefriends/manager', params)
+  .then(function(res) {
+  this_.gridOps.data = res.data.Obj || [];
+  })
+  },
+  loadCount: function() {
+  var this_ = this
+  var params = {
+  'accountId': this.accountId
+  }
+  var filter = this.gridOps.searchFields.filter
+  if (filter) {
+  params['filter'] = filter
+  }
+  this.$http.get('/api/v1/circlefriends/manager/count', params)
+  .then(function(res) {
+  this_.gridOps.total = res.data.Obj
+  })
+  },
+  // 分页
+  handleCurrentChange: function(currentPage) {
+  this.gridOps.currentPage = currentPage
+  this.loadData()
+  },
+  handleSizeChange: function(val) {
+  this.gridOps.pageSize = val
+  this.loadData()
+  },
+  selsChange: function(sels) {
+  this.sels = sels
+  }
+  }
+  }
 </script>
-<style scoped>
-  ._toolbar_header form:nth-last-child(1) button{
-    padding-right: 10px;
+<style lang="scss" scoped="">
+  .dialog-body {
+  .dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
   }
-  ._Communication_Administration_ElasticFrame{
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color:#000;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    display: none;
-    overflow-y: auto;
   }
-  ._Communication_Administration_ElasticFrame_Block{
-    display: block;
-  }
-  ._Communication_Administration_ElasticFrame_content{
-    width: 60%;
-    background-color: #fff;
-    margin: 0 auto;
-    margin-top: 5%;
-    padding-bottom: 5%;
-  }
-  ._ElasticFrame_header_information{
-    display: flex;
-    padding: 15px 0 0 10px;
-  }
-  ._ElasticFrame_header_information dt{
-    width: 20%;
-  }
-  ._ElasticFrame_header_information dt p{
-    width: 100px;
-    height: 100px;
-    overflow: hidden;
-    border-radius: 50%;
-    margin: 0 auto;
-  }
-  ._ElasticFrame_header_information dt img{
-    width: 100%;
-  }
-  ._ElasticFrame_header_information dd{
-    width: 80%;
-  }
-  ._ElasticFrame_header_information dd p{
-    line-height: 30px;
-  }
-  ._Communication_Administration_ElasticFrame_content form .el-form-item{
-    width: 80%;
-  }
-  ._Communication_Administration_ElasticFrame_content form .el-form-item, ._form_img,._form_comment{
-    margin: 30px 0 0 100px;
-  }
-  ._form_img,._form_comment{
-    display: flex;
-  }
-  ._from_img_content {
-    width: 400px;
-    display: flex;
-    flex-wrap: wrap;
-  }
-  ._from_img_content p{
-    width: 100px;
-    height: 100px;
-    overflow: hidden;
-    margin: 10px 10px;
-  }
-  ._from_img_content p img{
-    width: 100%;
-  }
-  ._form_comment p{
-    margin-left: 10px;
-    line-height: 25px;
+  .bar_form {
+  display: flex;
+  justify-content: space-between;
   }
 </style>

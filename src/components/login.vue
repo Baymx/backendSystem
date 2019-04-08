@@ -44,8 +44,8 @@
             return {
                 logining: false,
                 ruleForm2: {
-                    account: 'zhangsz',
-                    pwd: 'zsz123'
+                    account: 'admin',
+                    pwd: '111111'
                 },
                 rules2: {
                     account: [{
@@ -73,11 +73,22 @@
                 if (this.ruleForm2.account === '' || this.ruleForm2.pwd === '') {
                     alert('请输入用户名或密码')
                 } else {
-                    this.$http.get('/api/v1/login', {
+                    // let data = {
+                    //     account: this.ruleForm2.account,
+                    //     pwd: this.ruleForm2.pwd,
+                    //     loginType: 1
+                    // }
+                    // let params = Object.assign({}, data)
+                    // this.$api.login.userLogin(params).then(function (res) {
+                    //     console.log(res)
+                    //     _this.loginRef(res.data)
+                    // })
+
+                    this.$http.get('http://210.76.124.110:86/api/v1/login', {
                         account: this.ruleForm2.account,
                         pwd: this.ruleForm2.pwd,
                         loginType: 1
-                    }).then(function (res) {
+                    } ).then(function (res) {
                         _this.loginRef(res.data)
                     })
                 }

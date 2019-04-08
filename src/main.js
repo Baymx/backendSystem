@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import api from './http'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css';
@@ -15,8 +16,18 @@ import './assets/fonts/font_940361_llssefysmoi/iconfont.css'
 import 'url-search-params-polyfill'
 import md5 from 'js-md5';
 import $http from './axios';
+// import axios from 'axios';
 import store from './store';
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
 
+//Vue.use(Viewer) 默认配置写法
+Vue.use(Viewer, {
+  defaultOptions: {
+      zIndex: 9999
+  }
+})
+// axios.defaults.withCredentials = true
 if(!window.Promise){
   window.Promise = Promise;
 }
@@ -33,7 +44,7 @@ AMap.initAMapApiLoader({
   key : '85d4e60dcbacd1f0da5e7ae79e241110',
   plugin: ['AMap.Geolocation']
 })
-
+Vue.use(api)
 router.beforeEach((to, from, next) => {
   if (to.path == '/login') {
     sessionStorage.removeItem('user');

@@ -1,100 +1,86 @@
 <template>
   <div class="_device_management">
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary">删除</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-    <el-table style="width: 100%">
-      <el-table-column prop="name" label="序号"></el-table-column>
-      <el-table-column prop="sex" label="类型"></el-table-column>
-      <el-table-column prop="phone" label="设备编号"></el-table-column>
-      <el-table-column prop="site" label="创建时间"></el-table-column>
-    </el-table>
-    <!-- 新增 -->
-    <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
-      <el-form label-width="120px" ref="addForm">
-        <el-form-item label="类型" prop="issue">
-          <el-cascader
-            :options="options"
-            v-model="selectedOptions"
-            @change="handleChange">
-          </el-cascader>
-        </el-form-item>
-        <el-form-item label="设备编码" prop="card">
-          <el-input auto-complete="off"></el-input>
-        </el-form-item> 
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click.native="addSubmit" :loading="addLoading" v-model="addFormVisible">提价</el-button>
+    <ul class="tab-tilte">
+      <li @click="cur=0" :class="{active:cur==0}">基本信息</li>
+      <li @click="cur=1" :class="{active:cur==1}">生理情况</li>
+      <li @click="cur=2" :class="{active:cur==2}">疾病史</li>
+      <li @click="cur=3" :class="{active:cur==3}">手术史</li>
+      <li @click="cur=4" :class="{active:cur==4}">家族史</li>
+      <li @click="cur=5" :class="{active:cur==5}">生活坏境</li>
+      <div class="device_button">
+        <button class="el-icon-edit">编辑</button>
       </div>
-    </el-dialog>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage"
-      :page-sizes="[5, 10, 15, 20]"
-      :page-size="pagesize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total='total'>
-    </el-pagination>
+    </ul>
+    <div class="tab-content">
+      <basic v-show="cur==0">1</basic>
+      <physiology v-show="cur==1">2</physiology>
+      <illness v-show="cur==2"></illness>
+      <operation v-show="cur==3"></operation>
+      <family v-show="cur==4"></family>
+      <life v-show="cur==5">6</life>
+    </div>
   </div>
 </template>
 <script>
+import basic from '../record/basic.vue'
+import physiology from '../record/physiology.vue'
+import illness from '../record/illness.vue'
+import operation from '../record/operation.vue'
+import family from '../record/family.vue'
+import life from '../record/life.vue'
 export default {
   data(){
     return {
-      currentPage:1, //初始页
-      pagesize:5,
-      total:0,
-      addFormVisible: false,//新增界面是否显示
-      addLoading: false,
-      selectedOptions: [],
-      options: [{
-        value : 'zhinan',
-        label : '智能腕表'
-      },{
-        value : 'zujian',
-        label : '睡眠床垫'
-      },{
-        value : 'ziyuan',
-        label : '智能定位卡'
-      }],
+      cur:0
     }
   },
-  methods:{
-    handleSizeChange(val) {
-      this.pagesize = val;
-      this.handleCurrentChange(this.currentPage)
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val;
-      if(!this.flag){
-          this.currentChangePage(this.member)
-        }else{
-          this.currentChangePage(this.filterTableDataEnd)
-        }
-    },
-    //新增确定按钮
-    addSubmit:function(){
-      this.addFormVisible = false;
-    },
-    //新增页面显示
-    handleAdd: function(){
-      this.addFormVisible = true;
-    },
-    handleChange(value) {
-      console.log(value);
-    },
+  components:{
+    basic,
+    physiology,
+    illness,
+    operation,
+    family,
+    life
   }
 }
 </script>
 <style scoped>
-
+._device_management{
+  background: #F6F6F6;
+  padding-bottom: 10px;
+}
+.tab-tilte{
+  height: 42px;
+  padding: 15px 0 0 22px;
+}
+.tab-tilte li{
+  float: left;
+  padding: 5px 15px;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+}
+/* 点击对应的标题添加对应的背景颜色 */
+.tab-tilte .active{
+  background: #53AC99;
+  border-radius: 4px;
+  color: #fff;
+}
+.device_button{
+  float:right;
+  margin-right: 2.5%;
+}
+.device_button button{
+  background: linear-gradient(-180deg, #FFFFFF 0%, #F5F5F5 95%);
+  border: 1px solid #E6E6E6;
+  border-radius: 4px;
+  outline: 0;
+  border: 0;
+  padding: 10px 25px;
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #3685D7;
+  letter-spacing: 0.55px;
+}
 </style>
 

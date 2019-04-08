@@ -3,119 +3,131 @@
     <div class="_commodity_page_left">
       <el-col :span="50" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true">
-          <el-form-item prop="date">
-            <el-input v-model="filters"></el-input>
+          <el-form-item>
+            <el-input v-model="filters" placeholder="请输入手机号或用户名"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getUsers">搜索</el-button>
+            <el-button type="primary" @click="srarch">查询</el-button>
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
             <el-button type="primary" @click="getUsers">高级搜索</el-button>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
-            <router-link to="/commodityNewlyAdded"><el-button type="primary" @click="handleAdd">+新增会员</el-button></router-link>
+            <router-link to="/commodityNewlyAdded"><el-button type="primary">+新增会员</el-button></router-link>
           </el-form-item>
         </el-form>
       </el-col>
-      <el-table style="100%">
-        <el-table-column prop="id" label="姓名"></el-table-column>
-        <el-table-column prop="order" label="性别"></el-table-column>
-        <el-table-column prop="payment" label="年龄"></el-table-column>
+      <el-table style="100%" :data="user" :row-class-name="tableRowClassName" @row-click="handle">
+        <el-table-column prop="UserInfo.Name" label="姓名"></el-table-column>
+        <el-table-column label="性别">
+          <template slot-scope="scope">
+            {{scope.row.UserInfo.Sex == 1 ? '男' : '女'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="UserInfo.Age" label="年龄"></el-table-column>
       </el-table>
-      <el-pagination
-        layout="prev, pager, next"
-        :total="50">
-      </el-pagination>
+     <!-- 表格分页 -->
+      <el-pagination small @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="totalItems"></el-pagination>
     </div>
     <div class="_commodity_page_right">
       <div class="_commodity_page_right_top">
-        <div class="_page_right_img">
-        <img src="http://life.southmoney.com/tuwen/UploadFiles_6871/201808/20180808151110171.jpg"/>
+        <div class="_page_right_img" v-if="item.UserInfo">
+        <img :src="item.UserInfo.HeadUrl" :onerror="defaultImg"/>
         </div>
-        <div class="_page_right_content">
+        <div class="_page_right_content" v-if="item.UserInfo">
           <div class="_page_right_content_detailed">
-            <!-- <el-form>
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model="addForm.name" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="性别" prop="read">
-                  <el-input v-model="addForm.read" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="年龄" prop="issue">
-                  <el-input v-model="addForm.issue" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="生日" prop="issue">
-                  <el-input v-model="addForm.issue" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="手机" prop="issue">
-                  <el-input v-model="addForm.issue" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="电话" prop="issue">
-                  <el-input v-model="addForm.issue" auto-complete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="身份证号" prop="issue" class="_identity">
-                  <el-input v-model="addForm.issue" auto-complete="off"></el-input> 
-              </el-form-item>
-              <el-form-item label="联系地址" prop="issue" class="_address">
-                  <el-input v-model="addForm.issue" auto-complete="off"></el-input>
-              </el-form-item>
-            </el-form> -->
-            <ul class="_page_right_content_detailed_content">
+            <ul :class="detailFlag ? '_page_right_content_detailed_content _page_right_content_detailed_content_Flag' : '_page_right_content_detailed_content'" >
               <li>
                 <span>姓名:</span>
-                <p>张三</p>
+                <p v-if="item.UserInfo">{{item.UserInfo.Name}}</p>
               </li>
               <li>
                 <span>性别:</span>
-                <p>男</p>
+                <p>{{item.UserInfo.Sex == 1 ? '男' : '女'}}
+                  <!-- <span v-if="item.UserInfo.Sex==1">男</span>
+                  <span v-if="item.UserInfo.Sex==2">女</span> -->
+                </p>
               </li>
               <li>
                 <span>年龄:</span>
-                <p>24</p>
+                <p>{{item.UserInfo.Age}}岁</p>
               </li>
               <li>
                 <span>生日:</span>
-                <p>2019/1/21</p>
+                <p>{{item.UserInfo.Birthday}}</p>
               </li>
               <li>
                 <span>手机:</span>
-                <p>15030736092</p>
+                <p>{{item.UserInfo.Telephone}}</p>
               </li>
               <li>
                 <span>电话:</span>
-                <p>3438388731</p>
+                <p>{{item.UserInfo.Phone}}</p>
               </li>
-              <li class="_identity">
+              <li>
                 <span>身份证号:</span>
-                <p>430946183746280018</p>
+                <p>{{item.UserInfo.CardId}}</p>
               </li>
-              <li class="_address">
+              <li>
                 <span>联系地址:</span>
-                <p>北京市海淀区上地软件园孵化器</p>
+                <p>{{item.UserInfo.Addr}}</p>
+              </li>
+              <li>
+                <span>身高:</span>
+                <p>{{item.UserInfo.Height}}CM</p>
+              </li>
+              <li>
+                <span>体重:</span>
+                <p>{{item.UserInfo.Weight}}KG</p>
+              </li>
+              <li>
+                <span>监护人姓名:</span>
+                <p v-for="(list,index) in item.UserInfo.Guardian" :key="index">{{list.Name}}</p>
+              </li>
+              <li>
+                <span>监护人手机号:</span>
+                <p v-for="(list,index) in item.UserInfo.Guardian" :key="index">{{list.Phone}}</p>
+              </li>
+              <li>
+                <span>紧急联系人姓名:</span>
+                <p v-for="(list,index) in item.UserInfo.Linkman" :key="index">{{list.Name}}</p>
+              </li>
+              <li>
+                <span>紧急联系人手机号:</span>
+                <p v-for="(list,index) in item.UserInfo.Linkman" :key="index">{{list.Phone}}</p>
               </li>
             </ul>
+            <!-- <el-form>
+              <el-form-item>
+                <el-button type="primary" @click="detail">{{detailText}}</el-button>
+              </el-form-item>
+            </el-form> -->
           </div>
           <div class="_page_right_content_btn">
             <el-form>
-              <!-- <el-form-item>
-                <el-button type="primary">查询</el-button>
+              <el-form-item>
+                <el-button type="primary" @click="editClick">编辑</el-button>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary">+新增</el-button>
-              </el-form-item> -->
+                <!-- <template slot-scope="scope">
+                  <el-button type="danger" icon="el-icon-delete" @click="reveClick(scope.$index, scope.row)">删除</el-button>
+                </template> -->
+                <!-- <el-button type="primary" @click="reveClick(scope.$index, scope.row)">删除</el-button> -->
+                <el-button type="danger" icon="el-icon-delete" @click="reveClick">删除</el-button>
+              </el-form-item>
             </el-form>
           </div>
         </div>
       </div>
       <div class="_commodity_page_right_bottom">
         <ul>
-          <li @click="clickTab(1)"><router-link to="/commodity/integration">最新动态</router-link></li>
-          <li @click="clickTab(2)"><router-link to="/commodity/ConsultationManagement">健康管理</router-link></li>
-          <li @click="clickTab(3)"><router-link to="/commodity/HealthAgreement">健康咨询</router-link></li>
-          <li @click="clickTab(4)"><router-link to="/commodity/MedicalRecords">健康档案</router-link></li>
-          <li @click="clickTab(5)"><router-link to="/commodity/deviceManagement">订单信息</router-link></li>
-          <li @click="clickTab(6)"><router-link to="/commodity/SafetyMonitoring">积分信息</router-link></li>
-          <li @click="clickTab(7)"><router-link to="/commodityn">余额信息</router-link></li>
+          <li><router-link to="/commodity/integration">最新动态</router-link></li>
+          <li><router-link to="/commodity/ConsultationManagement">健康管理</router-link></li>
+          <li><router-link to="/commodity/HealthAgreement">安全管理</router-link></li>
+          <li><router-link to="/commodity/MedicalRecords">健康咨询</router-link></li>
+          <li><router-link to="/commodity/deviceManagement">健康档案</router-link></li>
+          <li><router-link to="/commodity/SafetyMonitoring">健康资料</router-link></li>
+          <li><router-link to="/commodity/commodityn">设备管理</router-link></li>
         </ul>
         <router-view></router-view>
       </div>
@@ -126,10 +138,10 @@
 export default {
   data(){
     return {
+      defaultImg:'this.src="' + require('../../assets/logo.png') + '"',
       filters:'',
       dialogImageUrl: '',
       dialogVisible: false,
-      pagesize:7,
       addForm:{
         name:'',
         date:'',
@@ -138,42 +150,185 @@ export default {
         name1: '',
         desc : ''
       },
+      user : [],
+      userListLeng : '',
+      detailFlag : false,
+      detailText : '查看详情',
+      item:{},
+      list:{},
+      currentPage: 1, //初始页
+      pageSize: 10,
+      totalItems: 0,
+      BelongInfoList : [],
+      index : 0
     }
   },
   methods : {
+     tableRowClassName ({row, rowIndex}) {
+       //把每一行的索引放进row
+        row.index = rowIndex;
+    },
+    handle(row, event, column) {
+      console.log(row, event, column)
+      this.user.map((item,index)=>{
+        if(row.Id === item.Id){
+          // this.index = index;
+        }
+      })
+      this.index = row.index;
+      this.item = row;
+    },
     //查询
-    getUsers(){
-
-    },
-    //添加页面显示
-    handleAdd:function(){
-      // console.log(this.order)
-      // this.addFormVisible=true;
-      // this.addForm = {
-      //   name:'',
-      //   date:'',
-      //   read:'',
-      //   issue:''
-      // }
-    },
-    //添加确定按钮
-    addSubmit:function(){
-      // this.addForm = {
-      //   name:this.addForm.name,
-      //   date:this.addForm.date,
-      //   read:this.addForm.read,
-      //   issue:this.addForm.issue
-      // }
-      // this.orderData.push(this.addForm);
-      // this.addFormVisible = false;
-      // this.totalItems = this.orderData.length;
-    },
-    clickTab(id){
-      console.log(id)
+    srarch(){
+      console.log(this.user)
+      if(this.filters!= ''){
+        var Obj = sessionStorage.getItem('role');
+        if(Obj){
+          Obj = JSON.parse(Obj);
+          let url1 = `/api/v1/staff/${Obj.AccountId}/alluserinfos?page=${this.currentPage}&row=${this.pageSize}&name=${this.filters}&phone=${this.filters}`;
+          this.$api.staff.getAllUserInfo(url1).then(res=>{
+            console.log(res)
+            this.totalItems = res.data.Obj.length
+            let arr = [];
+            for(var item of res.data.Obj){
+              arr = arr.concat(item)
+            }
+            if (arr.length === 0) return;
+            this.user = arr;
+            console.log(this.user)
+            this.item = arr[0];
+        })
+      }
+    }else{
+      this.loginUser()
     }
+  },
+  //删除
+  reveClick(){
+    console.log(this.BelongInfoList)
+    console.log(this.index)
+    const index = this.index
+    console.log(this.index,'111')
+    let companyId = this.BelongInfoList[index].BelongInfo[0].split(',')[0];
+    // let stationId = this.BelongInfoList[index].BelongInfo[0].split(',')[];
+    console.log(companyId)
+    // console.log(stationId,'111')
+    if(companyId === '-1'){
+      companyId = this.BelongInfoList[index].BelongInfo[0].split(',')[2];
+    }
+    // debugger
+    let accountId=this.BelongInfoList[index].UserInfo.AccountId;
+    // return;
+      // `/api/v1/stafftostation?accountId=${row.AccountId}&stationId=${companyId}`)
+    var url = "/api/v1/station/"+companyId+"/user?accountId="+accountId
+    this.$api.staff.deleteStafftocompany(url).then(res=>{
+      console.log(res)
+      // debugger
+      this.loginUser()
+        
+    })
+  },
+    /**
+     * handleSizeChange 列表一页的数量进行改变
+     * @param val 改变的数量
+     */
+    handleSizeChange(val) {
+      console.log(val)
+      this.pageSize = val;
+      this.loginUser()
+      // this.handleCurrentChange(this.currentPage)
+    },
+    /**
+     * handleCurrentChange 列表页数进行改变
+     * @param val 改变的页数
+     */
+    handleCurrentChange(val) {
+      console.log(val)
+      this.currentPage = val;
+      this.loginUser()
+    },
+    //编辑
+    editClick(){
+      // debugger
+      var str = ''
+      var bi = this.item.BelongInfo
+      bi.forEach(function(item, i) {
+        var stationInfo = item.split(",")
+        var sId = stationInfo[2]
+        if (i !== 0) {
+          str += ','
+        }
+        str += sId
+      })
+      // debugger
+      // 驿站信息存储SessionStratoger
+      this.$router.push({
+        path:'/commodityNewlyAdded',
+        query:{
+          id:this.item.Id,
+          str: str
+        }
+      });
+    },
+    loginUser(){
+      var Obj = sessionStorage.getItem('role');
+      let content = sessionStorage.getItem('content')
+      if (Obj) {
+        Obj = JSON.parse(Obj);
+        let url2 = `/api/v1/staff/${Obj.AccountId}/alluser/cnt`;
+        let data = {accountId:Obj.AccountId,excludeAccountIds:[]};
+        this.$api.staff.getAllUserNum(url2,data).then(res=>{
+          console.log(res)
+          this.totalItems = res.data.Obj
+          this.userListLeng = res.data.Obj
+        })
+        console.log(Obj.AccountId)
+        let url1 = `/api/v1/staff/${Obj.AccountId}/alluserinfos`+"?page="+this.currentPage+"&row="+this.pageSize
+        this.$api.staff.getAllUserInfo(url1).then(res=>{
+          let arr = [];
+          var date = new Date();
+          for(var item of res.data.Obj){
+            item.UserInfo.Birthday = new Date(+new Date(item.UserInfo.Birthday) + 16 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+            var string = item.UserInfo.Birthday.trim().split(" ")
+            item.UserInfo.Birthday = string[0]
+            item.UserInfo.Age = parseInt(date.getFullYear()) - parseInt(string[0].substring(0,4))
+            arr = arr.concat(item)
+          }
+          // for(let i=0;i<arr.length;i++){
+          //   if(arr[i].Sex === 1){
+          //     arr[i].Sex = "男"
+          //   }else{
+          //     arr[i].Sex = "女"
+          //   }
+          // }
+          this.user = arr;
+          this.BelongInfoList = res.data.Obj;
+          // sessionStorage.setItem('listBelong',JSON.stringify(this.BelongInfoList))
+          console.log(this.BelongInfoList);
+          this.index = 0;
+          this.item = arr[0];
+        })
+      }
+    },
+    detail(){
+      // if(this.detailFlag){
+      //   this.detailFlag = false;
+      //   this.detailText = '查看详情'
+      // }
+      // else{
+      //   this.detailFlag = true;
+      //   this.detailText = '收回'
+      // }
+      // this.detailFlag = true;
+    }
+  },
+  mounted(){
+
+    this.loginUser()
   }
 }
 </script>
+
 
 <style scoped>
   ._commodity_page{
@@ -183,6 +338,10 @@ export default {
     width: 25%;
     border: 1px solid #f2f2f2;
     margin-right: 10px;
+  }
+  ._commodity_page_left .el-pagination{
+    text-align: center;
+    margin-top: 10px;
   }
   .toolbar{
     background-color: #fff;
@@ -196,15 +355,18 @@ export default {
   ._commodity_page_right ._commodity_page_right_top{
     display: flex;
     border-bottom: 1px solid #f2f2f2;
-    padding-bottom: 20px;
   }
   ._page_right_img{
     width: 18%;
-    padding-left: 10px;
+    height: 200px;
+    margin-left: 10px;
+    border: 1px solid #e1e1e1;
   }
   ._page_right_img img{
     width: 100%;
-    margin-top: 10px;
+    height: 100%;
+    border-radius: 5px;
+    /* margin-top: 10px; */
   }
   ._page_right_content{
     width: 82%;
@@ -214,19 +376,26 @@ export default {
     display: flex;
     flex-wrap: wrap;
     padding-left: 20px;
+    height: auto;
+    overflow: hidden;
+  }
+  ._page_right_content_detailed_content_Flag{
+    height: auto!important;
+    /* overflow: hidden; */
   }
   ._page_right_content_detailed ._page_right_content_detailed_content li{
     width: 50%;
     display: flex;
     line-height: 50px;
+    color: #606266;
   }
   ._page_right_content_detailed ._page_right_content_detailed_content li span{
-    font-size: 16px;
+    font-size: 12px;
     margin-right: 10px;
   }
   ._page_right_content_detailed ._page_right_content_detailed_content li p{
     flex: 1;
-    font-size:16px;
+    font-size:14px;
   }
   ._page_right_content_detailed{
     width: 85%;
@@ -250,21 +419,21 @@ export default {
   }
   ._commodity_page_right_bottom ul{
     display: flex;
-    font-family: PingFangSC-Medium;
-    font-size: 18px;
+    /* font-family: PingFangSC-Medium;
+    font-size: 12px;
     color: #3685D7;
-    letter-spacing: 0.62px;
+    letter-spacing: 0.62px; */
   }
   ._commodity_page_right_bottom ul li{
     width: 14%;
-    line-height: 50px;
+    line-height: 45px;
     text-align: center;
   }
   ._commodity_page_right_bottom ul .router-link-active{
     font-family: PingFangSC-Medium;
-    font-size: 18px;
+    font-size: 12px;
     color: #3685D7;
-    letter-spacing: 0;
+    letter-spacing: 0.62px;
     position: relative;
   }
   ._commodity_page_right_bottom ul .router-link-active:before{
@@ -273,13 +442,16 @@ export default {
     content: '';
     height: 3px;
     position: absolute;
-    top: 25px;
-    width: 50px;
+    top: 32px;
+    width: 45px;
     left: 50%;
-    transform: translate(-50%,0)
+    transform: translate(-50%,0);
   }
   ._commodity_page_right_bottom ul li a{
-    color : #000;
+    font-family: PingFangSC-Regular;
+    font-size: 12px;
+    color: #333333;
+    letter-spacing: 0.62px;
     text-decoration: none;
   }
 </style>

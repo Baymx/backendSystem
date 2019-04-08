@@ -5,7 +5,7 @@ import { Loading, Message } from 'element-ui';
 
 //请求拦截器
 axios.interceptors.request.use(config => {
-  console.log(router.app.$route.path)
+  // console.log(router.app.$route.path)
   // 登录页面的接口，不需要签名之类的数据
   if (router.app.$route.path === '/login') {
     return config;
@@ -47,14 +47,10 @@ axios.interceptors.response.use(response => {
   return response;
 }, err => {
   console.log(err)
-  Message({
-    message: err,
-    type: 'error'
-  })
   return Promise.resolve(err.response);
 });
 
-axios.defaults.baseURL = '';
+axios.defaults.baseURL = 'http://210.76.124.110:86';
 axios.defaults.headers = {};
 axios.defaults.timeout = 30 * 1000;
 
@@ -72,21 +68,19 @@ export default {
         method: 'get',
         url,
         params: param,
-        // headers: {
-        //   'cache-control': 'no-cache'
-        // }
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        }
       }).then(res => {
         loadingInstance.close();
-        if (res.status && res.status == 200) {
-          if (res.data && res.data.Code === 0) {
-            resolve(res);
-          } else {
-            var data = res.data;
-            Message({
-              message: data.Message,
-              type: 'error'
-            })
-          }
+        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
+          resolve(res);
+        }else{
+          var data = res.data;
+          Message({
+            message: data.Message,
+            type: 'error'
+          })
         }
       }, reject);
     })
@@ -97,65 +91,29 @@ export default {
    * @param param 接口参数
    * @returns Promise
    */
-  post: function (url, param = {}) {
-    let loadingInstance = Loading.service({text:"提交中"});
+  post: function (url, param = {}, message) {
+    // console.log(url, param)
+    let loadingInstance = Loading.service({text:"加载中"});
     return new Promise((resolve,reject) => {
       axios({
         method: 'post',
         url,
         data: param,
-        // headers: {
-        //   'cache-control': 'no-cache'
-        // }
-      }).then(res => {
-        loadingInstance.close();
-        if (res.status && res.status == 200) {
-          if (res.data && res.data.Code === 0) {
-            var data = res.data;
-            Message({
-              message: data.Message,
-              type: 'success'
-            })
-            resolve(res);
-          } else {
-            var data = res.data;
-            Message({
-              message: data.Message,
-              type: 'error'
-            })
-          }
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
         }
-      }, reject);
-    })
-  },
-  /**
-   * put 提交数据接口
-   * @param url 接口地址
-   * @param param 接口参数
-   * @returns Promise
-   */
-  put: function (url, param = {}) {
-    let loadingInstance = Loading.service({text:"提交中"});
-    return new Promise((resolve,reject) => {
-      axios({
-        method: 'put',
-        url,
-        data: param,
-        // headers: {
-        //   'cache-control': 'no-cache'
-        // }
       }).then(res => {
         loadingInstance.close();
-        if (res.status && res.status == 200) {
-          if (res.data && res.data.Code === 0) {
-            var data = res.data;
-            Message({
-              message:  "修改成功",
-              type: 'success'
-            })
-            resolve(res);
-          } else {
-            var data = res.data;
+        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
+          // var data = res.data;
+          // Message({
+          //   message: data.Message,
+          //   type: 'success'
+          // })
+          resolve(res);
+        }else{
+          var data = res.data;
+          if (message) {
             Message({
               message: data.Message,
               type: 'error'
@@ -173,33 +131,97 @@ export default {
    */
   delete: function (url, param = {}) {
     let loadingInstance = Loading.service({text:"提交中"});
+    console.log(param)
     return new Promise((resolve,reject) => {
       axios({
         method: 'delete',
         url,
         data: param,
-        // headers: {
-        //   'cache-control': 'no-cache'
-        // }
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        }
       }).then(res => {
         loadingInstance.close();
-        if (res.status && res.status == 200) {
-          if (res.data && res.data.Code === 0) {
-            var data = res.data;
-            Message({
-              message: "删除成功!",
-              type: 'success'
-            })
-            resolve(res);
-          } else {
-            var data = res.data;
-            Message({
-              message: data.Message,
-              type: 'error'
-            })
-          }
+        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
+          var data = res.data;
+          Message({
+            message: '删除成功',
+            type: 'success'
+          })
+          resolve(res);
+        }else{
+          var data = res.data;
+          Message({
+            message: '删除失败',
+            type: 'error'
+          })
         }
       }, reject);
     })
-  }
+  },
+    /**
+   * put 编辑数据接口
+   * @param url 接口地址
+   * @param param 接口参数
+   * @returns Promise
+   */
+  put: function (url, param = {}) {
+    let loadingInstance = Loading.service({text:"提交中"});
+    return new Promise((resolve,reject) => {
+      axios({
+        method: 'put',
+        url,
+        data: param,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        }
+      }).then(res => {
+        loadingInstance.close();
+        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
+          var data = res.data;
+          Message({
+            message: '编辑成功',
+            type: 'success'
+          })
+          resolve(res);
+        }else{
+          var data = res.data;
+          Message({
+            message: '编辑失败',
+            type: 'error'
+          })
+        }
+      }, reject);
+    })
+  },
+  //服务编辑接口
+  patch: function (url, param = {}) {
+    let loadingInstance = Loading.service({text:"提交中"});
+    return new Promise((resolve,reject) => {
+      axios({
+        method: 'patch',
+        url,
+        data: param,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        }
+      }).then(res => {
+        loadingInstance.close();
+        if(res.status && res.status == 200 && res.data && res.data.Code === 0){
+          var data = res.data;
+          Message({
+            message: '编辑成功',
+            type: 'success'
+          })
+          resolve(res);
+        }else{
+          var data = res.data;
+          Message({
+            message: '编辑失败',
+            type: 'error'
+          })
+        }
+      }, reject);
+    })
+  },
 }

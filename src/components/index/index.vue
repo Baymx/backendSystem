@@ -63,7 +63,319 @@
     import axios from 'axios';
 
     export default {
-
+        methods:{
+    drawLine(){
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = this.$echarts.init(document.getElementById('myChart'))
+      // 绘制图表
+      myChart.setOption({
+        tooltip : {
+          //trigger: 'item',
+          //formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+          //orient: 'vertical',
+          left: 'left',
+          data: ['保姆保洁','养老陪护','月嫂','小时工']
+        },
+        series:[
+          {
+            type: 'pie',
+            radius : '35%',
+            center: ['45%', '57%'],
+            data:[
+              {value:134, name:'保姆保洁'},
+              {value:135, name:'养老陪护'},
+              {value:1548, name:'月嫂'},
+              {value:210,name:'小时工'}
+            ],
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]  
+      });
+    },
+    weatherIcons(){
+      let nursing = this.$echarts.init(document.getElementById('nursing'))
+      nursing.setOption({
+        tooltip:{},
+        legend:{
+          left: 'left',
+          data:['育婴师','保姆保洁']
+        },
+        series:[{
+          type:'pie',
+          radius:'35%',
+          center:['53%','50%'],
+          data:[
+            {value:1548,name:'育婴师'},
+            {value:430,name:'保姆保洁'}
+          ],
+          itemStyle:{
+            emphasis: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }]
+      })
+    },
+    weather(){
+      let san = this.$echarts.init(document.getElementById('san'))
+      san.setOption({
+        tooltip:{},
+        legend:{
+          left: 'left',
+          data:['小时工','保姆保洁','育婴师']
+        },
+        series:[{
+          type:'pie',
+          radius:'35%',
+          center:['55%','52%'],
+          data:[
+            {value:1548,name:'小时工'},
+            {value:330,name:'保姆保洁'},
+            {value:260,name:'育婴师'}
+          ],
+          itemStyle:{
+            emphasis: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }]
+      })
+    },
+    can(){
+      let canvas = this.$echarts.init(document.getElementById('canvas'))
+      canvas.setOption({
+        grid:{
+          left:'3%',
+          right:'4%',
+          bottom:'3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [20, 52, 101, 0, 0,230, 120],
+          type: 'line'
+        }]
+      })
+    },
+    histogram(){
+      let histogram = this.$echarts.init(document.getElementById('histogram'))
+      // 绘制图表
+      histogram.setOption({
+        color:['#3398DB'],
+        tooltip:{
+          trigger:'axis',
+          axisPointer:{            // 坐标轴指示器，坐标轴触发有效
+            type:'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        grid:{
+          left:'3%',
+          right:'4%',
+          bottom:'3%',
+          containLabel: true
+        },
+        xAxis:[
+          {
+            type : 'category',
+            data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            axisTick: {
+              alignWithLabel: true
+            }
+          }
+        ],
+        yAxis:[
+          {
+              type : 'value'
+          }
+        ],
+        series:[
+          {
+            type:'bar',
+            barWidth: '40%',
+           data:[30, 52, 150, 334, 60, 130, 90]
+          }
+        ]
+      });
+    },
+    right(){
+      let right =this.$echarts.init(document.getElementById('right'))
+      right.setOption({
+        tooltip:{
+          trigger:'axis',
+          axisPointer:{            // 坐标轴指示器，坐标轴触发有效
+            type:'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        legend:{
+          data:['利润', '支出', '收入']
+        },
+        grid:{
+          left:'3%',
+          right:'4%',
+          bottom:'3%',
+          containLabel:true
+        },
+        xAxis:[
+          {
+            type:'value'
+          }
+        ],
+        yAxis:[
+          {
+            type : 'category',
+            axisTick : {show:false},
+            data : ['周一','周二','周三','周四','周五','周六','周日']
+          }
+        ],
+        series:[
+          {
+            name:'利润',
+            type:'bar',
+            label: {
+              normal: {
+                show: true,
+                position: 'inside'
+              }
+            },
+            data:[200, 170, 240, 244, 200, 220, 210]
+          },
+          {
+            name:'收入',
+            type:'bar',
+            stack: '总量',
+            label:{
+              normal: {
+                show: true
+              }
+            },
+            data:[320, 302, 341, 374, 390, 450, 420]
+          },
+          {
+            name:'支出',
+            type:'bar',
+            stack: '总量',
+            label: {
+              normal: {
+                show: true,
+                position: 'left'
+              }
+            },
+            data:[-120, -132, -101, -134, -190, -230, -210]
+          }
+        ]
+      })
+    },
+    top(){
+      let top = this.$echarts.init(document.getElementById('top'))
+      top.setOption({
+        tooltip : {
+          trigger: 'axis',
+          axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        legend: {
+          data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎','百度']
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis : [
+          {
+            type : 'category',
+            data : ['周一','周二','周三','周四','周五','周六','周日']
+          }
+        ],
+        yAxis : [
+          {
+            type : 'value'
+          }
+        ],
+        series : [
+          {
+            name:'直接访问',
+            type:'bar',
+            data:[320, 332, 301, 334, 390, 330, 320]
+          },
+          {
+            name:'邮件营销',
+            type:'bar',
+            stack: '广告',
+            data:[120, 132, 101, 134, 90, 230, 210]
+          },
+          {
+            name:'联盟广告',
+            type:'bar',
+            stack: '广告',
+            data:[220, 182, 191, 234, 290, 330, 310]
+          },
+          {
+            name:'视频广告',
+            type:'bar',
+            stack: '广告',
+            data:[150, 232, 201, 154, 190, 330, 410]
+          },
+          {
+            name:'搜索引擎',
+            type:'bar',
+            data:[862, 1018, 964, 1026, 1679, 1600, 1570],
+            markLine : {
+              lineStyle: {
+                normal: {
+                  type: 'dashed'
+                }
+              },
+              data : [
+                [{type : 'min'}, {type : 'max'}]
+              ]
+            }
+          },
+          {
+            name:'百度',
+            type:'bar',
+            barWidth : 5,
+            stack: '搜索引擎',
+            data:[620, 732, 701, 734, 1090, 1130, 1120]
+          },
+        ]
+      })
+    }
+  },
+  mounted(){
+    this.drawLine();
+    this.weatherIcons();
+    this.weather();
+    this.can();
+    this.histogram();
+    this.right(),
+    this.top();
+    // let str = md5(`Unicode=${Obj.Unicode}&Timestamp=${Obj.Timestamp}&Token=${Obj.Token}`);
+    // console.log(str)
+    // this.$http.get(`/api/v1/userinfo/${Obj.Unicode}`).then(function (res) {
+    //   console.log(res)
+    // })
+  }
     }
 </script>
 <style scoped>

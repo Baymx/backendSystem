@@ -1,62 +1,65 @@
 <template>
   <div class="_Consultation_Management">
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true">
-        <el-form-item>
-          <!-- @click="handleAdd" -->
-          <el-button type="primary">全部</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary">未回复</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary">已回复</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-    <el-table style="width: 100%">
-      <el-table-column prop="name" label="序号"></el-table-column>
-      <el-table-column prop="sex" label="时间"></el-table-column>
-      <el-table-column prop="phone" label="内容"></el-table-column>
-      <el-table-column prop="site" label="状态"></el-table-column>
-       <el-table-column prop="site" label="操作"></el-table-column>
-    </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage"
-      :page-sizes="[5, 10, 15, 20]"
-      :page-size="pagesize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total='total'>
-    </el-pagination>
+    <ul class="tab-tilte">
+      <li @click="cur=0" :class="{active:cur==0}">最新数据</li>
+      <li @click="cur=1" :class="{active:cur==1}">图形分析</li>
+      <li @click="cur=2" :class="{active:cur==2}">历史数据</li>
+      <li @click="cur=3" :class="{active:cur==3}">手动输入</li>
+    </ul>
+    <div class="tab-content">
+      <newest v-show="cur==0" class="tab_ban"></newest>
+      <graph v-show="cur==1"></graph>
+      <imports v-show="cur==2"></imports>
+      <information v-show="cur==3"></information>
+    </div>
   </div>
 </template>
 <script>
+import newest from '../fitness/newest'
+import graph from '../fitness/graph'
+import imports from '../fitness/imports'
+import information from '../fitness/information'
 export default {
+  name:'',
   data(){
     return {
-      currentPage:1, //初始页
-      pagesize:5,
-      total:0,
+      cur:0
     }
   },
-  methods : {
-    handleSizeChange(val) {
-      this.pagesize = val;
-      this.handleCurrentChange(this.currentPage)
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val;
-      if(!this.flag){
-          this.currentChangePage(this.member)
-        }else{
-          this.currentChangePage(this.filterTableDataEnd)
-        }
-    },
+  components:{
+    newest,
+    graph,
+    imports,
+    information
   }
 }
 </script>
 <style scoped>
-  
+._Consultation_Management{
+  background: #F6F6F6;
+}
+.tab-tilte{
+  height: 42px;
+  padding: 15px 0 0 22px;
+}
+.tab-tilte li{
+  float: left;
+  padding: 5px 15px;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+}
+/* 点击对应的标题添加对应的背景颜色 */
+.tab-tilte .active{
+  background: #53AC99;
+  border-radius: 4px;
+  color: #fff;
+}
+/* .tab-content{
+  width: 100%;
+} */
+/* .tab-content .tab_ban{
+  float: left;
+  text-align: center;
+} */
 </style>

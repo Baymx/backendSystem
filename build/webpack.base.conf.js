@@ -15,6 +15,9 @@ module.exports = {
   entry: {
     app: './src/main.js'
   },
+  externals:{
+    'BMap':'BMap'
+  },
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
@@ -64,11 +67,7 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
-      },
-      {
-        test: /\.sass$/,
-        loaders: ['style', 'css', 'sass']
-    }
+      }
     ]
   },
   node: {
