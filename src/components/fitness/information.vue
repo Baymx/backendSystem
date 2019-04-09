@@ -56,73 +56,92 @@
 <script>
 // import EventBus from '../../eventBus'
 export default {
-  data(){
-    return{
-      manual:{
-        Sbp: '', //收缩压 
-        Dbp: '', //舒张压 
-        HeartRate:'', //心率 
-        MeasuringTime:'', //测量时间 
-        AccountId:'',//用户id
-      },
-      labelPosition: 'right',
-      roleId:'',
-      accountId:''
-    }
-  },
-  mounted(){
-    let role = sessionStorage.getItem('role');
-    if(role){
-      role = JSON.parse(role);
-      console.log(role)
-      this.roleId = role
-    }
-    // this.getHealth()
-  },
-  methods:{
-    manualBtn(){
-      let time = this.manual.MeasuringTime;
-      let datee = new Date(time).toJSON();
-      let times = new Date(+new Date(datee) + 16 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '') 
-      let role = sessionStorage.getItem('role')
-      if(role){
-        let accountId = JSON.parse(role).AccountId;
-        this.accountId = accountId
-        this.$http.post(`/api/v1/health/bp`,{
-          BloodPressure:{
-            Sbp:this.manual.Sbp,
-            Dbp:this.manual.Dbp,
-            HeartRate:this.manual.HeartRate,
-            MeasuringTime:times,
-            AccountId:this.accountId.AccountId
-          }
-        }).then(res =>{
-          console.log(res)
-          this.manual = res.data.Obj
-        })
-      }
+    data() {
+        return {
+            manual: {
+                Sbp: "", //收缩压
+                Dbp: "", //舒张压
+                HeartRate: "", //心率
+                MeasuringTime: "", //测量时间
+                AccountId: "" //用户id
+            },
+            manualData: {
+                Sbp: "", //收缩压
+                Dbp: "", //舒张压
+                HeartRate: "", //心率
+                MeasuringTime: "", //测量时间
+                AccountId: "" //用户id
+            },
+            labelPosition: "right",
+            roleId: "",
+            accountId: ""
+        };
     },
-    //保存
-    // manualBtn(){
-    //   // EventBus.$emit('item',this.manual)
-    // }
-  }
-}
+    mounted() {
+        let role = sessionStorage.getItem("role");
+        if (role) {
+            role = JSON.parse(role);
+            console.log(role);
+            this.roleId = role;
+        }
+        // this.getHealth()
+    },
+    methods: {
+        manualBtn() {
+            let time = this.manual.MeasuringTime;
+            let datee = new Date(time).toJSON();
+            let times = new Date(+new Date(datee) + 16 * 3600 * 1000)
+                .toISOString()
+                .replace(/T/g, " ")
+                .replace(/\.[\d]{3}Z/, "");
+            let role = sessionStorage.getItem("role");
+            if (role) {
+                let accountId = JSON.parse(role).AccountId;
+                this.accountId = accountId;
+                this.$http
+                    .post(`/api/v1/health/bp`, {
+                        BloodPressure: {
+                            Sbp: this.manual.Sbp,
+                            Dbp: this.manual.Dbp,
+                            HeartRate: this.manual.HeartRate,
+                            MeasuringTime: times,
+                            AccountId: this.accountId.AccountId
+                        }
+                    })
+                    .then(res => {
+                        console.log(res);
+                        this.manualData = res.data.Obj;
+                        this.manual = {
+                            Sbp: "", //收缩压
+                            Dbp: "", //舒张压
+                            HeartRate: "", //心率
+                            MeasuringTime: "", //测量时间
+                            AccountId: "" //用户id
+                        };
+                    });
+            }
+        }
+        //保存
+        // manualBtn(){
+        //   // EventBus.$emit('item',this.manual)
+        // }
+    }
+};
 </script>
 <style scoped>
-.information{
-  width: 95%;
-  margin-left: 2.5%;
-  background: #fff;
+.information {
+    width: 95%;
+    margin-left: 2.5%;
+    background: #fff;
 }
-.graph_top{
-  float: right;
-  margin-top:-5.5%;
+.graph_top {
+    float: right;
+    margin-top: -5.5%;
 }
-.information_top{
-  width: 400px;
-  height: 363px;
-  padding: 0 25px;
+.information_top {
+    width: 400px;
+    height: 363px;
+    padding: 0 25px;
 }
 /* .information_nav{
   padding-top: 10px;
@@ -134,36 +153,36 @@ export default {
   display: inline-block;
   width: 18%;
 } */
-.list{
-  padding-top: 10px;
-  border-bottom: 1px solid #ccc;
+.list {
+    padding-top: 10px;
+    border-bottom: 1px solid #ccc;
 }
-.bottom{
-  text-align: center;
-  padding-top: 10px;
+.bottom {
+    text-align: center;
+    padding-top: 10px;
 }
-.bottom button:nth-child(1){
-  background: #FF7669;
-  color: #fff;
-  border: 0;
-  outline: 0;
-  padding: 5px 10px;
-  border-radius: 5px;
+.bottom button:nth-child(1) {
+    background: #ff7669;
+    color: #fff;
+    border: 0;
+    outline: 0;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
-.bottom button:nth-child(2){
-  background: #42CABF;
-  color: #fff;
-  border: 0;
-  outline: 0;
-  padding: 5px 10px;
-  border-radius: 5px;
+.bottom button:nth-child(2) {
+    background: #42cabf;
+    color: #fff;
+    border: 0;
+    outline: 0;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 .el-form >>> .el-form-item {
-  margin-bottom: 0;
-  padding-top: 10px;
+    margin-bottom: 0;
+    padding-top: 10px;
 }
-.el-form >>> .el-form-item__label{
-  color: #333333;
-  width:20%;
+.el-form >>> .el-form-item__label {
+    color: #333333;
+    width: 20%;
 }
 </style>
