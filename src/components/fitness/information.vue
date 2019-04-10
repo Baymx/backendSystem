@@ -111,6 +111,7 @@ export default {
                     .then(res => {
                         console.log(res);
                         this.manualData = res.data.Obj;
+                        this.$emit('saveData',this.manualData);
                         this.manual = {
                             Sbp: "", //收缩压
                             Dbp: "", //舒张压
