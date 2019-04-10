@@ -1,10 +1,11 @@
 <template>
+<!-- 图形分析 -->
   <div class="graph_box">
-    <el-row class="graph_top">
-      <!-- <el-select placeholder="中医体质辨识" style="width:140px;">
-        <el-option style="height:45px;"></el-option>
-      </el-select> -->
-    </el-row>
+    <!-- <el-row class="graph_top">
+      <el-select v-model="value" placeholder="中医体质辨识" style="width:140px;">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
+      </el-select>
+    </el-row> -->
     <div class="graph_entire">
       <div class="graph_left">
         <p>选择时间：</p>
@@ -36,6 +37,17 @@
 export default {
   data(){
     return{
+      options:[{
+        value: '选项1',
+        label: '黄金糕'
+      },{
+        value: '选项2',
+        label: '双皮奶'
+      },{
+        value: '选项3',
+        label: '龙须面'
+      }],
+      value:'',
       pickerOptions1: {
         disabledDate(time) {
           return time.getTime() > Date.now();
@@ -150,7 +162,7 @@ export default {
 }
 .graph_top{
   float: right;
-  margin-top:-5.5%;
+  margin-top:-4.8%;
 }
 .graph_entire{
   width: 100%;

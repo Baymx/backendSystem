@@ -1,10 +1,11 @@
-<template>
+ <template>
+ <!-- 手动输入 -->
   <div class="information">
-    <el-row class="graph_top">
-      <!-- <el-select placeholder="血压" style="width:140px;">
-        <el-option style="height:45px;"></el-option>
-      </el-select> -->
-    </el-row>
+    <!-- <el-row class="graph_top">
+      <el-select v-model="value" placeholder="血压" style="width:140px;">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
+      </el-select>
+    </el-row> -->
     <div class="information_top">
       <div class="information_nav">
         <el-form :label-position="labelPosition" :model="manual" ref="manual">
@@ -21,8 +22,10 @@
           </el-form-item>
           <div class="list"></div>
           <el-form-item label="测量时间:" prop="MeasuringTime">
-            <el-date-picker v-model="manual.MeasuringTime" type="date" placeholder="选择日期" style="width:240px;margin-left:40px">
+            <el-date-picker v-model="manual.MeasuringTime" type="datetime" placeholder="选择日期时间" style="width:240px;margin-left:40px">
             </el-date-picker>
+            <!-- <el-date-picker v-model="manual.MeasuringTime" type="date" placeholder="选择日期" style="width:240px;margin-left:40px">
+            </el-date-picker> -->
           </el-form-item>
           <div class="list"></div>
         </el-form>
@@ -48,7 +51,7 @@
       <div class="list"></div> -->
       <div class="bottom">
         <button @click="manualBtn">保存</button>
-        <button>清空</button>
+        <button @click="empty">清空</button>
       </div>
     </div>
   </div>
@@ -56,93 +59,100 @@
 <script>
 // import EventBus from '../../eventBus'
 export default {
-    data() {
-        return {
-            manual: {
-                Sbp: "", //收缩压
-                Dbp: "", //舒张压
-                HeartRate: "", //心率
-                MeasuringTime: "", //测量时间
-                AccountId: "" //用户id
-            },
-            manualData: {
-                Sbp: "", //收缩压
-                Dbp: "", //舒张压
-                HeartRate: "", //心率
-                MeasuringTime: "", //测量时间
-                AccountId: "" //用户id
-            },
-            labelPosition: "right",
-            roleId: "",
-            accountId: ""
-        };
-    },
-    mounted() {
-        let role = sessionStorage.getItem("role");
-        if (role) {
-            role = JSON.parse(role);
-            console.log(role);
-            this.roleId = role;
-        }
-        // this.getHealth()
-    },
-    methods: {
-        manualBtn() {
-            let time = this.manual.MeasuringTime;
-            let datee = new Date(time).toJSON();
-            let times = new Date(+new Date(datee) + 16 * 3600 * 1000)
-                .toISOString()
-                .replace(/T/g, " ")
-                .replace(/\.[\d]{3}Z/, "");
-            let role = sessionStorage.getItem("role");
-            if (role) {
-                let accountId = JSON.parse(role).AccountId;
-                this.accountId = accountId;
-                this.$http
-                    .post(`/api/v1/health/bp`, {
-                        BloodPressure: {
-                            Sbp: this.manual.Sbp,
-                            Dbp: this.manual.Dbp,
-                            HeartRate: this.manual.HeartRate,
-                            MeasuringTime: times,
-                            AccountId: this.accountId.AccountId
-                        }
-                    })
-                    .then(res => {
-                        console.log(res);
-                        this.manualData = res.data.Obj;
-                        this.$emit('saveData',this.manualData);
-                        this.manual = {
-                            Sbp: "", //收缩压
-                            Dbp: "", //舒张压
-                            HeartRate: "", //心率
-                            MeasuringTime: "", //测量时间
-                            AccountId: "" //用户id
-                        };
-                    });
-            }
-        }
-        //保存
-        // manualBtn(){
-        //   // EventBus.$emit('item',this.manual)
-        // }
+  data(){
+    return{
+      manual:{
+        Sbp: '', //收缩压 
+        Dbp: '', //舒张压 
+        HeartRate:'', //心率 
+        MeasuringTime:'', //测量时间 
+        AccountId:'',//用户id
+      },
+      options:[{
+        value: '选项1',
+        label: '黄金糕'
+      },{
+        value: '选项2',
+        label: '双皮奶'
+      },{
+        value: '选项3',
+        label: '龙须面'
+      }],
+      labelPosition: 'right',
+      roleId:'',
+      accountId:'',
+      value:''
     }
-};
+  },
+  mounted(){
+    let role = sessionStorage.getItem('role');
+    if(role){
+      role = JSON.parse(role);
+      console.log(role)
+      this.roleId = role
+    }
+    // this.getHealth()
+  },
+  methods:{
+    manualBtn(){
+      var time = this.manual.MeasuringTime;
+      var dateee = new Date(time).toJSON();
+      var times = new Date(+new Date(dateee) + 16 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+      let role = sessionStorage.getItem('role')
+      if(role){
+        let accountId = JSON.parse(role).AccountId;
+        this.accountId = accountId
+        this.$http.post(`/api/v1/health/bp`,{
+          Sbp:this.manual.Sbp,
+          Dbp:this.manual.Dbp,
+          HeartRate:this.manual.HeartRate,
+          MeasuringTime:times,
+          AccountId:this.accountId
+        }).then(res =>{
+          console.log(res)
+          this.manualData = res.data.Obj
+          console.log(this.manualData)
+          this.manual = {
+            Sbp: '', //收缩压 
+            Dbp: '', //舒张压 
+            HeartRate:'', //心率 
+            MeasuringTime:'', //测量时间 
+            AccountId:'',//用户id
+          }
+        })
+      }
+    },
+    //清空
+    empty(){
+     this.manual = {
+        Sbp: '', //收缩压 
+        Dbp: '', //舒张压 
+        HeartRate:'', //心率 
+        MeasuringTime:'', //测量时间 
+        AccountId:'',//用户id
+      }
+    }
+    //保存
+    // manualBtn(){
+    //   // EventBus.$emit('item',this.manual)
+    // }
+  }
+}
 </script>
 <style scoped>
-.information {
-    width: 95%;
-    margin-left: 2.5%;
-    background: #fff;
+.information{
+  width: 95%;
+  margin-left: 2.5%;
+  background: #fff;
 }
-.graph_top {
-    float: right;
-    margin-top: -5.5%;
+.graph_top{
+  float: right;
+  margin-top:-4.8%;
 }
-.information_top {
-    width: 400px;
-    height: 363px;
-    padding: 0 25px;
+.information_top{
+  width: 400px;
+  height: 363px;
+  padding: 0 25px;
 }
 /* .information_nav{
   padding-top: 10px;
@@ -154,36 +164,36 @@ export default {
   display: inline-block;
   width: 18%;
 } */
-.list {
-    padding-top: 10px;
-    border-bottom: 1px solid #ccc;
+.list{
+  padding-top: 10px;
+  border-bottom: 1px solid #ccc;
 }
-.bottom {
-    text-align: center;
-    padding-top: 10px;
+.bottom{
+  text-align: center;
+  padding-top: 10px;
 }
-.bottom button:nth-child(1) {
-    background: #ff7669;
-    color: #fff;
-    border: 0;
-    outline: 0;
-    padding: 5px 10px;
-    border-radius: 5px;
+.bottom button:nth-child(1){
+  background: #FF7669;
+  color: #fff;
+  border: 0;
+  outline: 0;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
-.bottom button:nth-child(2) {
-    background: #42cabf;
-    color: #fff;
-    border: 0;
-    outline: 0;
-    padding: 5px 10px;
-    border-radius: 5px;
+.bottom button:nth-child(2){
+  background: #42CABF;
+  color: #fff;
+  border: 0;
+  outline: 0;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 .el-form >>> .el-form-item {
-    margin-bottom: 0;
-    padding-top: 10px;
+  margin-bottom: 0;
+  padding-top: 10px;
 }
-.el-form >>> .el-form-item__label {
-    color: #333333;
-    width: 20%;
+.el-form >>> .el-form-item__label{
+  color: #333333;
+  width:20%;
 }
 </style>
