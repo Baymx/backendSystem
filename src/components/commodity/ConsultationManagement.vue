@@ -1,26 +1,26 @@
 <template>
   <div class="_Consultation_Management">
     <ul class="tab-tilte">
-      <!-- <li @click="cur=0" :class="{active:cur==0}">最新数据</li> -->
-      <li @click="cur=0" :class="{active:cur==0}">图形分析</li>
-      <li @click="cur=1" :class="{active:cur==1}">历史数据</li>
-      <li @click="cur=2" :class="{active:cur==2}">手动输入</li>
+      <li @click="cur=0" :class="{active:cur==0}">最新数据</li>
+      <li @click="cur=1" :class="{active:cur==1}">图形分析</li>
+      <li @click="cur=2" :class="{active:cur==2}">历史数据</li>
+      <li @click="cur=3" :class="{active:cur==3}">手动输入</li>
       <div class="tab_button">
-        <el-select v-model="value" placeholder="血压" style="width:140px;">
+        <el-select v-model="value" placeholder="血压" style="width:160px;margin-top:-6px;">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
         </el-select>
       </div>
     </ul>
     <div class="tab-content">
-      <!-- <newest v-show="cur==0" class="tab_ban"></newest> -->
-      <graph v-show="cur==0"></graph>
-      <imports v-show="cur==1"></imports>
-      <information v-show="cur==2"></information>
+      <newest v-show="cur==0" class="tab_ban" :value="value"></newest>
+      <graph v-if="cur==1" :value="value"></graph>
+      <imports v-show="cur==2" :value="value"></imports>
+      <information v-show="cur==3" :value="value"></information>
     </div>
   </div>
 </template>
 <script>
-// import newest from '../fitness/newest'
+import newest from '../fitness/newest'
 import graph from '../fitness/graph'
 import imports from '../fitness/imports'
 import information from '../fitness/information'
@@ -32,19 +32,22 @@ export default {
       accountId:'', //用户id
       options:[{
         value: '选项1',
-        label: '黄金糕'
+        label: '血压'
       },{
         value: '选项2',
-        label: '双皮奶'
+        label: '血糖'
       },{
         value: '选项3',
-        label: '龙须面'
+        label: '血氧'
+      },{
+        value: '选项4',
+        label: '心电'
       }],
-      value:''
+      value:'选项1'
     }
   },
   components:{
-    // newest,
+    newest,
     graph,
     imports,
     information
@@ -82,7 +85,8 @@ export default {
 .tab_button{
   float: right;
   margin-right: 2.5%;
-  margin-top: -6px; 
+  /* margin-left:20px;
+  margin-bottom: -6px;  */
 }
 /* .tab-content{
   width: 100%;
