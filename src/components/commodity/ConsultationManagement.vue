@@ -6,7 +6,7 @@
       <li @click="cur=2" :class="{active:cur==2}">历史数据</li>
       <li @click="cur=3" :class="{active:cur==3}">手动输入</li>
       <div class="tab_button">
-        <el-select v-model="value" placeholder="血压" style="width:160px;margin-top:-6px;">
+        <el-select v-model="value" placeholder="血压" style="width:160px;margin-top:-6px;" @change="selectTab">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
         </el-select>
       </div>
@@ -31,19 +31,19 @@ export default {
       cur:0,//tab切换
       accountId:'', //用户id
       options:[{
-        value: '选项1',
+        value: 'bloodPressure',
         label: '血压'
       },{
-        value: '选项2',
+        value: 'bloodSugar',
         label: '血糖'
       },{
-        value: '选项3',
+        value: 'bloodOxygen',
         label: '血氧'
       },{
-        value: '选项4',
+        value: 'ECG',
         label: '心电'
       }],
-      value:'选项1'
+      value:'bloodPressure'
     }
   },
   components:{
@@ -56,7 +56,10 @@ export default {
    
   },
   methods:{
-    
+    selectTab(value){
+      console.log(value)
+      this.value  = value;
+    }
   }
 }
 </script>
