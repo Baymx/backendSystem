@@ -21,11 +21,19 @@
         <el-table-column prop="DbpRange" label="参考范围"></el-table-column>
       </el-table>
       <el-table v-if="type == 'bloodSugar'" :data="dataList" border style="width: 95%;margin-left:2.5%;margin-top:10px;">
-        <el-table-column prop="Sbp" label="收缩压" width="180"></el-table-column>
-        <el-table-column prop="Dbp" label="舒张压" width="180"></el-table-column>
-        <el-table-column prop="HeartRate" label="心率" width="180"></el-table-column>
         <el-table-column prop="MeasuringTime" :formatter='formatter' label="检测时间" width="180"></el-table-column>
-        <el-table-column prop="DbpRange" label="参考范围"></el-table-column>
+        <el-table-column prop="Bgc" label="血糖" width="180"></el-table-column>
+        <el-table-column prop="TimeFrame" :formatter='formatTimeFrame' label="时段"></el-table-column>
+      </el-table>
+      <el-table v-if="type == 'bloodOxygen'" :data="dataList" border style="width: 95%;margin-left:2.5%;margin-top:10px;">
+        <el-table-column prop="MeasuringTime" :formatter='formatter' label="检测时间" width="180"></el-table-column>
+        <el-table-column prop="Spo" label="血氧" width="180"></el-table-column>
+        <el-table-column prop="HeartRate"  label="心率"></el-table-column>
+      </el-table>
+      <el-table v-if="type == 'ECG'" :data="dataList" border style="width: 95%;margin-left:2.5%;margin-top:10px;">
+        <el-table-column prop="MeasuringTime" :formatter='formatter' label="检测时间" width="180"></el-table-column>
+        <el-table-column prop="HeartRate" label="心率" width="180"></el-table-column>
+        <el-table-column prop="BreathRate"  label="呼吸"></el-table-column>
       </el-table>
     </div>
     <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalItems">
@@ -84,6 +92,17 @@ export default {
                 .replace(/\.[\d]{3}Z/, "");
             return times;
         },
+        formatTimeFrame(row, column){
+          if(row.TimeFrame == 0){
+            return '空腹'
+          }else if(row.TimeFrame == 1){
+            return '随机'
+          }else if(row.TimeFrame == 2){
+            return '糖负荷2小时'
+          }else{
+            return '未知error'
+          }
+        },
         //分页
         //handleSizeChange 列表一页的数量进行改变
         handleSizeChange(val) {
@@ -108,6 +127,18 @@ export default {
                     });
                 } else if (this.type == "bloodSugar") {
                     Promise.all([this.tableCount('bg'),this.tableList('bg')]).then(result => {
+                        console.log(result);
+                         this.totalItems = result[0];
+                         this.tableData = result[1];
+                    });
+                } else if (this.type == "bloodOxygen") {
+                    Promise.all([this.tableCount('bo'),this.tableList('bo')]).then(result => {
+                        console.log(result);
+                         this.totalItems = result[0];
+                         this.tableData = result[1];
+                    });
+                } else if (this.type == "ECG") {
+                    Promise.all([this.tableCount('ecg'),this.tableList('ecg')]).then(result => {
                         console.log(result);
                          this.totalItems = result[0];
                          this.tableData = result[1];
