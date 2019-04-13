@@ -37,7 +37,6 @@
 </template>
 <script>
 export default {
-    props: ["value"],
     data() {
         return {
             // options:[{
@@ -86,8 +85,16 @@ export default {
                 startTime: "",
                 endTime: ""
             },
-            dataList: []
+            dataList: [],
+            type: "bloodPressure"
         };
+    },
+    props: ["value"],
+    watch: {
+        value(newVal) {
+            this.type = newVal;
+            this.draw();
+        }
     },
     mounted() {
         this.draw();
@@ -119,7 +126,7 @@ export default {
                 .replace(/\.[\d]{3}Z/, "");
             return times;
         },
-        getData() {
+        getData(type) {
             let role = sessionStorage.getItem("role");
             if (role) {
                 let accountId = JSON.parse(role).AccountId;
@@ -127,7 +134,7 @@ export default {
                 return new Promise(resolve => {
                     this.$http
                         .get(
-                            `/api/v1/health/bp?accountId=${
+                            `/api/v1/health/${type}?accountId=${
                                 this.accountId
                             }&start=${this.searchFields.startTime ||
                                 "2019-01-01"}&end=${this.searchFields.endTime ||
@@ -140,13 +147,20 @@ export default {
             }
         },
         draw() {
-            this.getData().then(res => {
-                this.dataList = res.data.Obj;
-                this.drawLine();
-            });
+            if (this.type == "bloodPressure") {
+                this.getData("bp").then(res => {
+                    this.dataList = res.data.Obj;
+                    this.drawLine();
+                });
+            }
         },
         drawLine() {
             console.log(this.dataList, "draw line");
+            if (this.type == "bloodPressure") {
+              this.drawBPLine();
+            }
+        },
+        drawBPLine() {
             var xData = [],
                 sbpData = [],
                 dbpData = [],
@@ -165,10 +179,6 @@ export default {
                     heartRateData.push(item.HeartRate);
                 }
             });
-            console.log(xData);
-            console.log(sbpData);
-            console.log(dbpData);
-            console.log(heartRateData);
             let myChart = this.$echarts.init(
                 document.getElementById("myChart")
             );
