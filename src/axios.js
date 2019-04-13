@@ -50,7 +50,7 @@ axios.interceptors.response.use(response => {
   return Promise.resolve(err.response);
 });
 
-axios.defaults.baseURL = 'http://210.76.124.110:86';
+axios.defaults.baseURL = 'http://210.76.124.66:86';
 axios.defaults.headers = {};
 axios.defaults.timeout = 30 * 1000;
 

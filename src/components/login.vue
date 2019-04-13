@@ -84,7 +84,7 @@
                     //     _this.loginRef(res.data)
                     // })
 
-                    this.$http.get('http://210.76.124.110:86/api/v1/login', {
+                    this.$http.get('http://210.76.124.66:86/api/v1/login', {
                         account: this.ruleForm2.account,
                         pwd: this.ruleForm2.pwd,
                         loginType: 1

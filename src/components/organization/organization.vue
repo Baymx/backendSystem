@@ -121,7 +121,7 @@
             v-else
             class="avatar-uploader"
             :http-request="editUploadFile"
-            action="http://210.76.124.110:86/api/v1/file/push"
+            action="http://210.76.124.66:86/api/v1/file/push"
             :show-file-list="false"
             >
             <i class="el-icon-plus avatar-uploader-icon"></i>
@@ -192,7 +192,7 @@
                   v-else
                   class="avatar-uploader"
                   :http-request="addUploadFile"
-                  action="http://210.76.124.110:86/api/v1/file/push"
+                  action="http://210.76.124.66:86/api/v1/file/push"
                   :show-file-list="false"
                   >
                   <img v-if="addForm.BusinessLicenseImg" :src="addForm.BusinessLicenseImg" class="avatar">

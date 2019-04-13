@@ -101,7 +101,7 @@
               <div class="setting_right">
                 <el-upload
                   class="upload-demo"
-                  action="http://210.76.124.110:86/api/v1/file/push"
+                  action="http://210.76.124.66:86/api/v1/file/push"
                   :show-file-list="false"
                   :http-request="addUploadFile"
                   >
@@ -196,7 +196,7 @@
                   <p>上传logo</p>
                 </div>
                 <div class="setting_right">
-                  <el-upload class="upload-demo" action="http://210.76.124.110:86/api/v1/file/push" :show-file-list="false" :http-request="editUploadFile">
+                  <el-upload class="upload-demo" action="http://210.76.124.66:86/api/v1/file/push" :show-file-list="false" :http-request="editUploadFile">
                     <el-button size="small" type="primary">点击上传</el-button>
                     <button @click="btnClick">系统上传</button>
                   </el-upload>

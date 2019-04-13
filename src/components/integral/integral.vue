@@ -139,7 +139,7 @@
             <img :src="addForm.HeadUrl" class="avatar">
             <i class="el-icon-error uploader-delete" @click="addFormDelImg"></i>
           </div>
-          <el-upload v-else class="avatar-uploader" :http-request="addUploadFile" action="http://210.76.124.110:86/api/v1/file/push" :show-file-list="false">
+          <el-upload v-else class="avatar-uploader" :http-request="addUploadFile" action="http://210.76.124.66:86/api/v1/file/push" :show-file-list="false">
             <i class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </div>
@@ -211,7 +211,7 @@
             <img :src="editForm.HeadUrl" class="avatar">
             <i class="el-icon-error uploader-delete" @click="delectImg"></i>
           </div>
-          <el-upload v-else class="avatar-uploader" :http-request="editUploadFile" action="http://210.76.124.110:86/api/v1/file/push" :show-file-list="false">
+          <el-upload v-else class="avatar-uploader" :http-request="editUploadFile" action="http://210.76.124.66:86/api/v1/file/push" :show-file-list="false">
             <i class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </div>

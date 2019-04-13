@@ -63,7 +63,7 @@
             <img :src="NewlyForm.HeadUrl" class="avatar">
             <i class="el-icon-error uploader-delete" @click="addFormDelImg"></i>
           </div>
-          <el-upload v-else class="avatar-uploader" :http-request="addUploadFile" action="http://210.76.124.110:86/api/v1/file/push" :show-file-list="false">
+          <el-upload v-else class="avatar-uploader" :http-request="addUploadFile" action="http://210.76.124.66:86/api/v1/file/push" :show-file-list="false">
             <i class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </div>
@@ -234,7 +234,7 @@
         // },
         // options: [],
         value: '',
-        // userInfo: {http://210.76.124.110:86/api/v1/company//userinfo
+        // userInfo: {http://210.76.124.66:86/api/v1/company//userinfo
         //   avatar: 'https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike92%2C5%2C5%2C92%2C30/sign=62d46c39067b020818c437b303b099b6/d4628535e5dde7119c3d076aabefce1b9c1661ba.jpg'
         // },
         routeId: '',
