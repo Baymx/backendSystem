@@ -152,12 +152,33 @@ export default {
                     this.dataList = res.data.Obj;
                     this.drawLine();
                 });
+            } else if (this.type == "bloodSugar") {
+                this.getData("bg").then(res => {
+                    this.dataList = res.data.Obj;
+                    this.drawLine();
+                });
+            } else if (this.type == "bloodOxygen") {
+                this.getData("bo").then(res => {
+                    this.dataList = res.data.Obj;
+                    this.drawLine();
+                });
+            } else if (this.type == "ECG") {
+                this.getData("ecg").then(res => {
+                    this.dataList = res.data.Obj;
+                    this.drawLine();
+                });
             }
         },
         drawLine() {
             console.log(this.dataList, "draw line");
             if (this.type == "bloodPressure") {
-              this.drawBPLine();
+                this.drawBPLine();
+            }else if(this.type == "bloodSugar"){
+              this.drawBGLine();
+            }else if(this.type == "bloodOxygen"){
+              this.drawBOLine();
+            }else if(this.type == "ECG"){
+              this.drawECGLine();
             }
         },
         drawBPLine() {
