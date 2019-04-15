@@ -65,7 +65,6 @@ export default {
             this.currentPage = 1;
             this.pageSize = 5;
             this.srarch();
-            console.log(newVal);
         }
     },
     computed: {

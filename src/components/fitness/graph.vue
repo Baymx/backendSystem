@@ -92,6 +92,7 @@ export default {
     props: ["value"],
     watch: {
         value(newVal) {
+            console.log(newVal);
             this.type = newVal;
             this.draw();
         }
@@ -110,11 +111,6 @@ export default {
             if (this.value === "选项3") {
                 return this.copy[2];
             }
-        }
-    },
-    watch: {
-        value() {
-            this.drawLine();
         }
     },
     methods: {
@@ -173,14 +169,17 @@ export default {
             console.log(this.dataList, "draw line");
             if (this.type == "bloodPressure") {
                 this.drawBPLine();
-            }else if(this.type == "bloodSugar"){
-              this.drawBGLine();
-            }else if(this.type == "bloodOxygen"){
-              this.drawBOLine();
-            }else if(this.type == "ECG"){
-              this.drawECGLine();
+            } else if (this.type == "bloodSugar") {
+                this.drawBGLine();
+            } else if (this.type == "bloodOxygen") {
+                this.drawBOLine();
+            } else if (this.type == "ECG") {
+                this.drawECGLine();
             }
         },
+        /**
+         * 绘制血压的图表
+         */
         drawBPLine() {
             var xData = [],
                 sbpData = [],
@@ -203,8 +202,22 @@ export default {
             let myChart = this.$echarts.init(
                 document.getElementById("myChart")
             );
+            myChart.clear();
             myChart.setOption({
                 color: ["red", "yellow", "blue"],
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataView: {
+                            readOnly: false
+                        }, //数据视图
+                        magicType: {
+                            type: ["line", "bar"]
+                        }, //切换为折线图，切换为柱状图
+                        restore: {}, //还原
+                        saveAsImage: {} //保存为图片
+                    }
+                },
                 tooltip: {},
                 legend: {
                     data: ["血压"]
@@ -255,7 +268,242 @@ export default {
                     }
                 ]
             });
-        }
+        },
+        /**
+         * 绘制血糖的图表
+         */
+        drawBGLine() {
+            var xData = [],
+                bgcData = [];
+            this.dataList.map(item => {
+                if (item.MeasuringTime) {
+                    xData.push(this.formatter(item.MeasuringTime));
+                }
+                if (item.Bgc || item.Bgc == 0) {
+                    bgcData.push(item.Bgc);
+                }
+            });
+            let myChart = this.$echarts.init(
+                document.getElementById("myChart")
+            );
+            myChart.clear();
+            myChart.setOption({
+                tooltip: {},
+                legend: {
+                    data: ["血糖"]
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataView: {
+                            readOnly: false
+                        }, //数据视图
+                        magicType: {
+                            type: ["line", "bar"]
+                        }, //切换为折线图，切换为柱状图
+                        restore: {}, //还原
+                        saveAsImage: {} //保存为图片
+                    }
+                },
+                // dataZoom: [
+                //     {
+                //         type: "slider",
+                //         show: true,
+                //         xAxisIndex: [0],
+                //         start: 0,
+                //         end: 50
+                //     },
+                //     {
+                //         type: "inside",
+                //         xAxisIndex: [0],
+                //         start: 0,
+                //         end: 50
+                //     }
+                // ],
+                xAxis: {
+                    type: "category",
+                    data: xData,
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                },
+                yAxis: {
+                    type: "value"
+                },
+                series: [
+                    {
+                        name: "血糖",
+                        type: "bar",
+                        barWidth: 30, //柱图宽度
+                        data: bgcData
+                    }
+                ]
+            });
+        },
+        /**
+         * 绘制血氧的图表
+         */
+        drawBOLine() {
+            var xData = [],
+                spoData = [],
+                heartRateData = [];
+            this.dataList.map(item => {
+                if (item.MeasuringTime) {
+                    xData.push(this.formatter(item.MeasuringTime));
+                }
+                if (item.Spo || item.Spo == 0) {
+                    spoData.push(item.Spo);
+                }
+                if (item.HeartRate || item.HeartRate == 0) {
+                    heartRateData.push(item.HeartRate);
+                }
+            });
+            let myChart = this.$echarts.init(
+                document.getElementById("myChart")
+            );
+            myChart.clear();
+            myChart.setOption({
+                color: ["red", "yellow"],
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataView: {
+                            readOnly: false
+                        }, //数据视图
+                        magicType: {
+                            type: ["line", "bar"]
+                        }, //切换为折线图，切换为柱状图
+                        restore: {}, //还原
+                        saveAsImage: {} //保存为图片
+                    }
+                },
+                tooltip: {},
+                legend: {
+                    data: ["血氧"]
+                },
+                dataZoom: [
+                    {
+                        type: "slider",
+                        show: true,
+                        xAxisIndex: [0],
+                        start: 0,
+                        end: 10
+                    },
+                    {
+                        type: "inside",
+                        xAxisIndex: [0],
+                        start: 0,
+                        end: 10
+                    }
+                ],
+                xAxis: {
+                    type: "category",
+                    data: xData,
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                },
+                yAxis: {
+                    type: "value"
+                },
+                series: [
+                    {
+                        name: "血氧",
+                        type: "bar",
+                        barWidth: 30, //柱图宽度
+                        data: spoData
+                    },
+                    {
+                        name: "心率",
+                        type: "bar",
+                        barWidth: 30, //柱图宽度
+                        data: heartRateData
+                    }
+                ]
+            });
+        },
+        /**
+         * 绘制血氧的图表
+         */
+        drawECGLine() {
+            var xData = [],
+                breathRateData = [],
+                heartRateData = [];
+            this.dataList.map(item => {
+                if (item.MeasuringTime) {
+                    xData.push(this.formatter(item.MeasuringTime));
+                }
+                if (item.BreathRate || item.BreathRate == 0) {
+                    breathRateData.push(item.BreathRate);
+                }
+                if (item.HeartRate || item.HeartRate == 0) {
+                    heartRateData.push(item.HeartRate);
+                }
+            });
+            let myChart = this.$echarts.init(
+                document.getElementById("myChart")
+            );
+            myChart.clear();
+            myChart.setOption({
+                color: ["red", "yellow"],
+                toolbox: {
+                    show: true,
+                    feature: {
+                        dataView: {
+                            readOnly: false
+                        }, //数据视图
+                        magicType: {
+                            type: ["line", "bar"]
+                        }, //切换为折线图，切换为柱状图
+                        restore: {}, //还原
+                        saveAsImage: {} //保存为图片
+                    }
+                },
+                tooltip: {},
+                legend: {
+                    data: ["心电"]
+                },
+                dataZoom: [
+                    {
+                        type: "slider",
+                        show: true,
+                        xAxisIndex: [0],
+                        start: 0,
+                        end: 10
+                    },
+                    {
+                        type: "inside",
+                        xAxisIndex: [0],
+                        start: 0,
+                        end: 10
+                    }
+                ],
+                xAxis: {
+                    type: "category",
+                    data: xData,
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                },
+                yAxis: {
+                    type: "value"
+                },
+                series: [
+                    {
+                        name: "呼吸",
+                        type: "bar",
+                        barWidth: 30, //柱图宽度
+                        data: heartRateData
+                    },
+                    {
+                        name: "心率",
+                        type: "bar",
+                        barWidth: 30, //柱图宽度
+                        data: heartRateData
+                    }
+                ]
+            });
+        },
     }
 };
 </script>
