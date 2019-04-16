@@ -29,7 +29,10 @@
         </div>
       </div>
       <div class="graph_right">
-        <p>血压趋势</p>
+        <p v-if="type == 'bloodPressure'">血压趋势</p>
+        <p v-if="type == 'bloodSugar'">血糖趋势</p>
+        <p v-if="type == 'bloodOxygen'">血氧趋势</p>
+        <p v-if="type == 'ECG'">心电趋势</p>
         <div id="myChart"></div>
       </div>
     </div>
@@ -86,7 +89,7 @@ export default {
                 endTime: ""
             },
             dataList: [],
-            type: "bloodPressure"
+            type: ""
         };
     },
     props: ["value"],
@@ -98,6 +101,9 @@ export default {
         }
     },
     mounted() {
+        console.log(this.type)
+        console.log(this.value)
+        this.type = this.value;
         this.draw();
     },
     computed: {
