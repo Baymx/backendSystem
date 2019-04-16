@@ -9,7 +9,7 @@
     <!-- 血压 -->
     <div class="information_top">
       <div class="information_nav">
-        <el-form :label-position="labelPosition" :model="manual" ref="manual" v-if="value === '选项1'">
+        <el-form :label-position="labelPosition" :model="manual" ref="manual" v-if="value === 'bloodPressure'">
           <el-form-item label="收缩压:" prop="Sbp">
             <el-input v-model="manual.Sbp" style="width:240px;margin-left: 40px;"></el-input>
           </el-form-item>
@@ -29,7 +29,7 @@
           <div class="list"></div>
         </el-form>
       </div>
-      <div class="bottom" v-if="value === '选项1'">
+      <div class="bottom" v-if="value === 'bloodPressure'">
         <button @click="manualBtn">保存</button>
         <button @click="empty">清空</button>
       </div>
@@ -37,15 +37,13 @@
     <!-- 血糖 -->
     <div class="information_top">
       <div class="information_nav">
-        <el-form :label-position="labelPosition" :model="glucose" ref="glucose" v-if="value === '选项2'">
+        <el-form :label-position="labelPosition" :model="glucose" ref="glucose" v-if="value === 'bloodSugar'">
           <el-form-item label="时段:" prop="TimeFrame">
+            <!-- <el-input v-model="glucose.TimeFrame" style="width:240px;margin-left: 40px;"></el-input> -->
             <el-select v-model="glucose.TimeFrame" placeholder="" style="width:240px;margin-left: 40px">
-              <el-option v-for="item in glucose.TimeFrame" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
+              <el-option v-for="item in glucose.TimeFrameOption" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
             </el-select>
           </el-form-item>
-          <!-- <el-form-item label="血氧浓度:" prop="Spo">
-            <el-input v-model="glucose.Spo" style="width:240px;margin-left: 40px;"></el-input>
-          </el-form-item> -->
           <div class="list"></div>
           <el-form-item label="心率:" prop="Bgc">
             <el-input v-model="glucose.Bgc" style="width:240px;margin-left: 40px;"></el-input>
@@ -58,7 +56,7 @@
           <div class="list"></div>
         </el-form>
       </div>
-      <div class="bottom" v-if="value === '选项2'">
+      <div class="bottom" v-if="value === 'bloodSugar'">
         <button @click="glucoseBtn">保存</button>
         <button @click="glucoseempty">清空</button>
       </div>
@@ -66,7 +64,7 @@
     <!-- 血氧 -->
     <div class="information_top">
       <div class="information_nav">
-        <el-form :label-position="labelPosition" :model="blood" ref="blood" v-if="value === '选项3'">
+        <el-form :label-position="labelPosition" :model="blood" ref="blood" v-if="value === 'bloodOxygen'">
           <el-form-item label="血氧浓度:" prop="Spo">
             <el-input v-model="blood.Spo" style="width:240px;margin-left: 40px;"></el-input>
           </el-form-item>
@@ -82,7 +80,7 @@
           <div class="list"></div>
         </el-form>
       </div>
-      <div class="bottom" v-if="value === '选项3'">
+      <div class="bottom" v-if="value === 'bloodOxygen'">
         <button @click="bloodBtn">保存</button>
         <button @click="bloodempty">清空</button>
       </div>
@@ -90,7 +88,7 @@
     <!-- 心电 -->
     <div class="information_top">
       <div class="information_nav">
-        <el-form :label-position="labelPosition" :model="exercise" ref="exercise" v-if="value === '选项4'">
+        <el-form :label-position="labelPosition" :model="exercise" ref="exercise" v-if="value === 'ECG'">
           <el-form-item label="呼吸:" prop="BreathRate">
             <el-input v-model="exercise.BreathRate" style="width:240px;margin-left: 40px;"></el-input>
           </el-form-item>
@@ -106,7 +104,7 @@
           <div class="list"></div>
         </el-form>
       </div>
-      <div class="bottom" v-if="value === '选项4'">
+      <div class="bottom" v-if="value === 'ECG'">
         <button @click="exerciseBtn">保存</button>
         <button @click="exerciseempty">清空</button>
       </div>
@@ -134,7 +132,8 @@ export default {
         Id:'',
         AccountId:'', //用户id ,
         Bgc:'',//血糖
-        TimeFrame:[{
+        TimeFrame :'',
+        TimeFrameOption:[{
           value: '0',
           label: '空腹'
         },{
