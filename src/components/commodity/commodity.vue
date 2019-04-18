@@ -327,10 +327,6 @@ export default {
       // this.detailFlag = true;
     },
     SelectData(index,row){
-      console.log(row)
-      console.log(index)
-      console.log(row.UserInfo.Sex)
-      console.log(row.UserInfo.AccountId)
       sessionStorage.setItem('AccountId', row.UserInfo.AccountId);
     }
   },
