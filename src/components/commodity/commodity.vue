@@ -25,6 +25,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="UserInfo.Age" label="年龄"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+            <template slot-scope="scope">
+              <el-button size="small" @click="SelectData(scope.$index, scope.row)">查看</el-button>
+            </template>
+          </el-table-column>
       </el-table>
      <!-- 表格分页 -->
       <el-pagination small @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="totalItems"></el-pagination>
@@ -320,6 +325,13 @@ export default {
       //   this.detailText = '收回'
       // }
       // this.detailFlag = true;
+    },
+    SelectData(index,row){
+      console.log(row)
+      console.log(index)
+      console.log(row.UserInfo.Sex)
+      console.log(row.UserInfo.AccountId)
+      sessionStorage.setItem('AccountId', row.UserInfo.AccountId);
     }
   },
   mounted(){
