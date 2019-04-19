@@ -194,6 +194,7 @@ export default {
           console.log(res)
           this.manualData = res.data.Obj
           console.log(this.manualData)
+          this.$emit('add',this.manualData) 
           this.manual = {
             Sbp: '', //收缩压 
             Dbp: '', //舒张压 
@@ -230,6 +231,7 @@ export default {
           MeasuringTime:this.glucose.MeasuringTime//测量时间
         }).then(res=>{
           this.glucoseData = res.data.Obj
+          this.$emit('add',this.glucoseData) 
           this.glucose = {
             Bgc:'',//血糖
             TimeFrame:'',//时段 0空腹 1随机 2糖负荷2小时
@@ -262,6 +264,7 @@ export default {
         }).then(res=>{
           this.bloodData = res.data.Obj
           console.log(this.bloodData)
+          this.$emit('add',this.bloodData) 
           this.blood = {
             Spo:'', //血氧浓度 
             HeartRate:'',//心率 
@@ -293,6 +296,7 @@ export default {
           MeasuringTime:this.exercise.MeasuringTime
         }).then(res=>{
           this.exerciseData = res.data.Obj
+          this.$emit('add',this.exerciseData) 
           this.exercise = {
             BreathRate:'',
             HeartRate:'', 

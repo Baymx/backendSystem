@@ -59,10 +59,7 @@ export default {
             type: "bloodPressure"
         };
     },
-    props: ["value"],
-    watch: {
-       
-    },
+    props: ["value","data"],
     computed: {
         ...mapGetters(["accountGetters"]),
         dataList() {
@@ -91,6 +88,14 @@ export default {
         computedAccountId:function(newVal,oldVale){
             this.accountId = newVal;
             this.srarch()
+        },
+        data:function(newVal,oldVale) {
+            console.log(newVal)
+            if(newVal){
+                this.tableData.push(newVal);
+                this.totalItems ++;
+            }
+          
         }
     },
     methods: {

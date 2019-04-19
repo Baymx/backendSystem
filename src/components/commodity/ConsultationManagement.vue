@@ -14,8 +14,8 @@
     <div class="tab-content">
       <newest v-show="cur==0" class="tab_ban" :value="value"></newest>
       <graph v-if="cur==1" :value="value"></graph>
-      <imports v-show="cur==2" :value="value"></imports>
-      <information v-show="cur==3" :value="value"></information>
+      <imports v-show="cur==2" :data="data" :value="value"></imports>
+      <information v-show="cur==3"   @add="add" :value="value"></information>
     </div>
   </div>
 </template>
@@ -43,7 +43,8 @@ export default {
         value: 'ECG',
         label: '心电'
       }],
-      value:'bloodPressure'
+      value:'bloodPressure',
+      data: {},
     }
   },
   components:{
@@ -59,6 +60,10 @@ export default {
     selectTab(value){
       console.log(value)
       this.value  = value;
+    },
+    add(data){
+      this.data = data;
+      console.log(data);
     }
   }
 }
