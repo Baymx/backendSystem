@@ -1,44 +1,45 @@
 <template>
-  <!-- 图形分析 -->
-  <div class="graph_box">
-    <!-- <el-row class="graph_top">
+    <!-- 图形分析 -->
+    <div class="graph_box">
+        <!-- <el-row class="graph_top">
       <el-select v-model="value" placeholder="中医体质辨识" style="width:140px;">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" style="height:45px;"></el-option>
       </el-select>
     </el-row> -->
-    <div class="graph_entire">
-      <div class="graph_left">
-        <p>选择时间：</p>
-        <div class="list"></div>
-        <div class="graph_block">
-          <span class="demonstration">时间</span>
-          <el-date-picker v-model="value1" type="date" placeholder="选择日期" style="width:170px;margin-left:15px">
-          </el-date-picker>
+        <div class="graph_entire">
+            <div class="graph_left">
+                <p>选择时间：</p>
+                <div class="list"></div>
+                <div class="graph_block">
+                    <span class="demonstration">时间</span>
+                    <el-date-picker v-model="value1" type="date" placeholder="选择日期" style="width:170px;margin-left:15px">
+                    </el-date-picker>
+                </div>
+                <div class="list"></div>
+                <div class="graph_frame">
+                    <span class="demonstration">时段</span>
+                    <el-radio v-model="radio" label="1">周</el-radio>
+                    <p>
+                        <el-radio v-model="radio" label="2">月</el-radio>
+                    </p>
+                </div>
+                <div class="list"></div>
+                <div class="graph_bottom">
+                    <button>确认</button>
+                </div>
+            </div>
+            <div class="graph_right">
+                <p v-if="type == 'bloodPressure'">血压趋势</p>
+                <p v-if="type == 'bloodSugar'">血糖趋势</p>
+                <p v-if="type == 'bloodOxygen'">血氧趋势</p>
+                <p v-if="type == 'ECG'">心电趋势</p>
+                <div id="myChart"></div>
+            </div>
         </div>
-        <div class="list"></div>
-        <div class="graph_frame">
-          <span class="demonstration">时段</span>
-          <el-radio v-model="radio" label="1">周</el-radio>
-          <p>
-            <el-radio v-model="radio" label="2">月</el-radio>
-          </p>
-        </div>
-        <div class="list"></div>
-        <div class="graph_bottom">
-          <button>确认</button>
-        </div>
-      </div>
-      <div class="graph_right">
-        <p v-if="type == 'bloodPressure'">血压趋势</p>
-        <p v-if="type == 'bloodSugar'">血糖趋势</p>
-        <p v-if="type == 'bloodOxygen'">血氧趋势</p>
-        <p v-if="type == 'ECG'">心电趋势</p>
-        <div id="myChart"></div>
-      </div>
     </div>
-  </div>
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex";
 export default {
     data() {
         return {
@@ -89,7 +90,8 @@ export default {
                 endTime: ""
             },
             dataList: [],
-            type: ""
+            type: "",
+            accountId: ""
         };
     },
     props: ["value"],
@@ -98,15 +100,23 @@ export default {
             console.log(newVal);
             this.type = newVal;
             this.draw();
+        },
+        computedAccountId: function(newVal, oldVale) {
+            console.log(newVal);
+            console.log(oldVale);
+            this.accountId = newVal;
+            this.draw();
         }
     },
     mounted() {
-        console.log(this.type)
-        console.log(this.value)
+        console.log(this.type);
+        console.log(this.value);
+        this.accountId = this.accountGetters;
         this.type = this.value;
         this.draw();
     },
     computed: {
+        ...mapGetters(["accountGetters"]),
         list() {
             if (this.value === "选项1") {
                 return this.copy[0];
@@ -117,6 +127,9 @@ export default {
             if (this.value === "选项3") {
                 return this.copy[2];
             }
+        },
+        computedAccountId() {
+            return this.accountGetters;
         }
     },
     methods: {
@@ -129,10 +142,7 @@ export default {
             return times;
         },
         getData(type) {
-            let role = sessionStorage.getItem("role");
-            if (role) {
-                let accountId = JSON.parse(role).AccountId;
-                this.accountId = accountId;
+            if (this.accountId || this.accountId == 0) {
                 return new Promise(resolve => {
                     this.$http
                         .get(
@@ -147,27 +157,38 @@ export default {
                         });
                 });
             }
+            return new Promise(resolve => {
+                resolve(null);
+            });
         },
         draw() {
             if (this.type == "bloodPressure") {
                 this.getData("bp").then(res => {
-                    this.dataList = res.data.Obj;
-                    this.drawLine();
+                    if (res) {
+                        this.dataList = res.data.Obj;
+                        this.drawLine();
+                    }
                 });
             } else if (this.type == "bloodSugar") {
                 this.getData("bg").then(res => {
-                    this.dataList = res.data.Obj;
-                    this.drawLine();
+                    if (res) {
+                        this.dataList = res.data.Obj;
+                        this.drawLine();
+                    }
                 });
             } else if (this.type == "bloodOxygen") {
                 this.getData("bo").then(res => {
-                    this.dataList = res.data.Obj;
-                    this.drawLine();
+                    if (res) {
+                        this.dataList = res.data.Obj;
+                        this.drawLine();
+                    }
                 });
             } else if (this.type == "ECG") {
                 this.getData("ecg").then(res => {
-                    this.dataList = res.data.Obj;
-                    this.drawLine();
+                    if (res) {
+                        this.dataList = res.data.Obj;
+                        this.drawLine();
+                    }
                 });
             }
         },
@@ -509,7 +530,7 @@ export default {
                     }
                 ]
             });
-        },
+        }
     }
 };
 </script>

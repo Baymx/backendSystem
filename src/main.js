@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import api from './http'
 import ElementUI from 'element-ui';
+import Vuex from 'vuex';
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css';
 import './assets/css/iconfont.css'
@@ -38,6 +39,7 @@ Vue.prototype.$http = $http;
 Vue.use(ElementUI);
 Vue.use(router);
 Vue.use(AMap);
+Vue.use(Vuex);
 Vue.prototype.$md5 = md5
 Vue.config.productionTip = false
 AMap.initAMapApiLoader({

@@ -43,6 +43,7 @@
 
 </template>
 <script>
+import { mapActions  , mapGetters} from 'vuex'
 export default {
     data() {
         return {
@@ -60,25 +61,37 @@ export default {
     },
     props: ["value"],
     watch: {
-        value(newVal) {
-            this.type = newVal;
-            this.currentPage = 1;
-            this.pageSize = 5;
-            this.srarch();
-        }
+       
     },
     computed: {
+        ...mapGetters(["accountGetters"]),
         dataList() {
             // return this.tableData.slice(
             //   (this.currentPage - 1) * this.pageSize,
             //   this.currentPage * this.pageSize
             // );
             return this.tableData;
+        },
+        computedAccountId(){
+            return this.accountGetters;
         }
     },
     mounted() {
         // this.getImports()
+        this.accountId =  this.$store.state.accountId;
         this.srarch();
+    },
+    watch :{
+         value:function(newVal,oldVale) {
+            this.type = newVal;
+            this.currentPage = 1;
+            this.pageSize = 5;
+            this.srarch();
+        },
+        computedAccountId:function(newVal,oldVale){
+            this.accountId = newVal;
+            this.srarch()
+        }
     },
     methods: {
         //时间格式化
@@ -114,10 +127,7 @@ export default {
             this.srarch();
         },
         srarch() {
-            let role = sessionStorage.getItem("role");
-            if (role) {
-                let accountId = JSON.parse(role).AccountId;
-                this.accountId = accountId;
+            if (this.accountId || this.accountId == 0) {
                 if (this.type == "bloodPressure") {
                     Promise.all([this.tableCount('bp'),this.tableList('bp')]).then(result => {
                         console.log(result);

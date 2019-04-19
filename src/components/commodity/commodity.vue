@@ -25,11 +25,6 @@
           </template>
         </el-table-column>
         <el-table-column prop="UserInfo.Age" label="年龄"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
-            <template slot-scope="scope">
-              <el-button size="small" @click="SelectData(scope.$index, scope.row)">查看</el-button>
-            </template>
-          </el-table-column>
       </el-table>
      <!-- 表格分页 -->
       <el-pagination small @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="totalItems"></el-pagination>
@@ -140,6 +135,7 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
 export default {
   data(){
     return {
@@ -168,7 +164,8 @@ export default {
       index : 0
     }
   },
-  methods : {
+  methods:{
+     ...mapActions(['update']),
      tableRowClassName ({row, rowIndex}) {
        //把每一行的索引放进row
         row.index = rowIndex;
@@ -182,6 +179,7 @@ export default {
       })
       this.index = row.index;
       this.item = row;
+      this.$store.dispatch("update",row.UserInfo.AccountId);
     },
     //查询
     srarch(){
@@ -202,6 +200,10 @@ export default {
             this.user = arr;
             console.log(this.user)
             this.item = arr[0];
+            // console.log(324)
+            // console.log(this.item)
+            // console.log(324)
+            // this.$store.dispatch("update",this.item.UserInfo.AccountId)
         })
       }
     }else{
@@ -305,13 +307,17 @@ export default {
           //   }else{
           //     arr[i].Sex = "女"
           //   }
-          // }
+          // }falluserinfos
           this.user = arr;
           this.BelongInfoList = res.data.Obj;
           // sessionStorage.setItem('listBelong',JSON.stringify(this.BelongInfoList))
           console.log(this.BelongInfoList);
           this.index = 0;
           this.item = arr[0];
+          console.log(324)
+            console.log(this.item)
+            console.log(324)
+            this.$store.dispatch("update",this.item.UserInfo.AccountId)
         })
       }
     },
